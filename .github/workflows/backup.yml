@@ -1,0 +1,40 @@
+name: weekly database backup
+
+# The Supabase free plan has no backups we can restore ourselves, and for now
+# we have a single (production) database. This saves a full copy of our tables
+# every Monday as a downloadable file (Actions tab > a run > Artifacts),
+# kept for 90 days.
+#
+# Restore (only if something went badly wrong, and only after discussing it):
+#   pg_restore --clean --if-exists --no-owner -d "$SUPABASE_DB_URL" backup.dump
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"   # Mondays 06:17 UTC
+  workflow_dispatch:
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Dump public tables and migration history
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "::error::Repository secret SUPABASE_DB_URL is not set (see docs/SETUP.md)"
+            exit 1
+          fi
+          # pg_dump must be at least the server's version; Supabase runs Postgres 15-17.
+          docker run --rm -v "$PWD:/out" postgres:17 \
+            pg_dump "$SUPABASE_DB_URL" --format=custom --no-owner --no-privileges \
+              --schema=public --schema=app --schema=supabase_migrations \
+              --file=/out/backup.dump
+          ls -lh backup.dump
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: db-backup-${{ github.run_id }}
+          path: backup.dump
+          retention-days: 90

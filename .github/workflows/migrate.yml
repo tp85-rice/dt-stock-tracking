@@ -1,0 +1,49 @@
+name: migrate database
+
+# Applies new files in supabase/migrations/ to the Supabase project.
+# Runs automatically after a pull request that changes migrations is merged
+# into main, so only reviewed changes reach the database. Can also be started
+# by hand (Actions tab > migrate database > Run workflow).
+#
+# Needs the repository secret SUPABASE_DB_URL: the Session pooler connection
+# string from Supabase (Connect button > Session pooler), with the database
+# password filled in. See docs/SETUP.md.
+
+on:
+  push:
+    branches: [main]
+    paths: ["supabase/migrations/**"]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Only list the migrations that would run"
+        type: boolean
+        default: false
+
+concurrency:
+  group: migrate-production
+  cancel-in-progress: false
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.122.1
+
+      - name: Apply migrations
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          SUPABASE_TELEMETRY_DISABLED: "1"
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "::error::Repository secret SUPABASE_DB_URL is not set (see docs/SETUP.md)"
+            exit 1
+          fi
+          extra=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then extra="--dry-run"; fi
+          supabase db push --db-url "$SUPABASE_DB_URL" --yes $extra

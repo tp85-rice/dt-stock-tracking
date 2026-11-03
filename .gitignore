@@ -1,0 +1,26 @@
+# Secrets: never commit
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# Node / Next.js (web/, from M2)
+node_modules/
+.next/
+out/
+.vercel/
+
+# Database backups and dumps
+*.dump
+*.sql.gz
+
+# Excel lock files and OS noise
+~$*.xlsx
+.~lock.*#
+.DS_Store
