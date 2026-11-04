@@ -116,10 +116,11 @@ def import_sheet(conn: psycopg.Connection, sheet: DriverSheet, is_test: bool = F
             cur.execute(
                 """insert into public.observations
                      (ticker, signal_code, observed_on, value, base_case_version, period, arrow,
-                      source_code, notes, origin)
-                   values (%s, %s, %s, %s, %s, %s, %s, %s, %s, 'import')""",
+                      source_code, notes, withheld, origin)
+                   values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'import')""",
                 (t, rec["signal_code"], rec["observed_on"], rec["value"], rec["base_case_version"],
-                 rec["period"], rec["arrow"], rec["source_code"], rec["notes"]))
+                 rec["period"], rec["arrow"], rec["source_code"], rec["notes"],
+                 rec["withheld"] and rec["value"] is None))
 
         for table, column, items in (
             ("drivers", "code", sheet.drivers),

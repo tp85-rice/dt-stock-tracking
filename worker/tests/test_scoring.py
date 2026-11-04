@@ -200,3 +200,28 @@ def test_changes_are_audited(db):
         "select action, before->>'tolerance', after->>'tolerance' from audit_log "
         "where table_name = 'signals' order by id desc limit 1").fetchone()
     assert row == ("update", "0.1", "0.2")
+
+
+# ---------------------------------------------------------------- template v2 (thesis fields)
+
+def test_withheld_metric_is_red(db):
+    # House Rule: a metric withheld on a natural disclosure occasion is a signal.
+    _setup(db)
+    db.execute(
+        """insert into observations (ticker, signal_code, observed_on, value, base_case_version, period, withheld)
+           values ('NVDA', 'S1', '2026-11-01', null, 'v1', 'Q3 FY26', true)""")
+    assert db.execute("select colour, data_status from v_scores").fetchone() == ("RED", "Withheld")
+    assert db.execute("select colour from v_signal_latest").fetchone()[0] == "RED"
+
+
+def test_withheld_flag_ignored_when_value_present(db):
+    _setup(db)
+    db.execute(
+        """insert into observations (ticker, signal_code, observed_on, value, base_case_version, period, withheld)
+           values ('NVDA', 'S1', '2026-11-01', 120, 'v1', 'Q3 FY26', true)""")
+    assert db.execute("select colour, data_status from v_scores").fetchone() == ("GREEN", "OK")
+
+
+def test_thesis_rows_are_not_scored(db):
+    _setup(db, case_type="Thesis")
+    assert _score(db, 120)[:2] == ("GREY", "No base case")
