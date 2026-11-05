@@ -9,6 +9,7 @@
   --axis: #c3c2b7;
   --border: rgba(11, 11, 11, 0.10);
   --series-1: #2a78d6;
+  --series-2: #eb6834;
   --link: #1f5fae;
   --good: #0ca30c;
   --warning: #fab219;
@@ -30,6 +31,7 @@
     --axis: #383835;
     --border: rgba(255, 255, 255, 0.10);
     --series-1: #3987e5;
+    --series-2: #d95926;
     --link: #7fb2f0;
     --neutral: #7c7b75;
     --good-text: #0ca30c;
@@ -46,6 +48,7 @@
   --axis: #383835;
   --border: rgba(255, 255, 255, 0.10);
   --series-1: #3987e5;
+  --series-2: #d95926;
   --link: #7fb2f0;
   --neutral: #7c7b75;
   --good-text: #0ca30c;
@@ -193,3 +196,21 @@ button.primary {
 form.stack { display: flex; flex-direction: column; gap: 10px; }
 form.stack > * + * { margin-top: 0; }
 form.stack > button { align-self: flex-start; }
+
+/* Charts */
+.charts { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.chart { margin: 0; background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; min-width: 0; }
+.chart + .chart { margin-top: 0; }
+.chart svg { width: 100%; height: auto; display: block; margin: 6px 0; }
+.chart .grid { stroke: var(--hairline); stroke-width: 1; }
+.chart .axis { stroke: var(--axis); stroke-width: 1; }
+.chart .tick { fill: var(--text-muted); font-size: 12px; }
+.chart .value { fill: var(--text-primary); font-size: 13px; font-weight: 600; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 4px; color: var(--text-secondary); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.key-box { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.key-line { width: 14px; height: 2px; border-radius: 1px; display: inline-block; }
+.num-table td.num, .num-table th:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+figure.chart:not(.charts > *) { margin-top: 16px; }
+
+.sources th { text-align: left; padding: 4px 12px 4px 0; font-size: 12px; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--hairline); }

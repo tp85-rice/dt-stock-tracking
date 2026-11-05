@@ -9,7 +9,7 @@
   "drivers": [
     {
       "id": 1,
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "code": "D1",
       "name": "Hyperscaler capex",
       "thesis": "Big-4 cloud capex funds most data center GPU demand; sustained growth extends NVIDIA's revenue runway, a cut shortens it.",
@@ -29,7 +29,7 @@
     },
     {
       "id": 2,
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "code": "D2",
       "name": "Rubin ramp",
       "thesis": "A smooth Rubin ramp keeps NVIDIA's product cadence ahead of custom silicon and protects pricing through the Blackwell-to-Rubin transition.",
@@ -49,7 +49,7 @@
     },
     {
       "id": 3,
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "code": "D3",
       "name": "Non-hyperscale demand",
       "thesis": "AI clouds, sovereign, enterprise and AI-native buyers (NVIDIA's 'AI Clouds, Industrial & Enterprise' platform) diversify demand beyond the big hyperscalers and reduce customer concentration.",
@@ -69,7 +69,7 @@
     },
     {
       "id": 4,
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "code": "D4",
       "name": "Gross margin",
       "thesis": "Margin holding near guidance through product transitions converts revenue growth into earnings.",
@@ -89,7 +89,7 @@
     },
     {
       "id": 5,
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "code": "D5",
       "name": "China (base case zero)",
       "thesis": "Any resumption of meaningful data center sales to China is upside to a base case that assumes none.",
@@ -109,7 +109,7 @@
     },
     {
       "id": 6,
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "code": "D6",
       "name": "Balance sheet quality",
       "thesis": "Inventory, receivables and supply commitments growing faster than revenue would signal demand pull-forward or financing risk.",
@@ -130,7 +130,7 @@
   ],
   "signals": [
     {
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "signal_code": "S1",
       "driver_code": "D1",
       "signal_name": "Big-4 hyperscaler capex (AMZN+GOOG+MSFT+META cash purchases of property and equipment), $B per calendar quarter",
@@ -155,7 +155,7 @@
       "age_days": 6
     },
     {
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "signal_code": "S2",
       "driver_code": "D1",
       "signal_name": "TSMC monthly revenue, YoY %",
@@ -180,7 +180,7 @@
       "age_days": 28
     },
     {
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "signal_code": "S3",
       "driver_code": "D2",
       "signal_name": "Rubin share of Data Center revenue, %",
@@ -205,7 +205,7 @@
       "age_days": null
     },
     {
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "signal_code": "S4",
       "driver_code": "D3",
       "signal_name": "AI Clouds, Industrial & Enterprise (ACIE) Data Center revenue, $B",
@@ -230,7 +230,7 @@
       "age_days": 71
     },
     {
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "signal_code": "S5",
       "driver_code": "D4",
       "signal_name": "GAAP gross margin, %",
@@ -255,7 +255,7 @@
       "age_days": 71
     },
     {
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "signal_code": "S6",
       "driver_code": "D5",
       "signal_name": "China data center export licence milestones",
@@ -280,7 +280,7 @@
       "age_days": null
     },
     {
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "signal_code": "S7",
       "driver_code": "D6",
       "signal_name": "Inventory, $B",
@@ -305,7 +305,7 @@
       "age_days": 71
     },
     {
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "signal_code": "S8",
       "driver_code": "D6",
       "signal_name": "Days sales outstanding, days",
@@ -330,7 +330,7 @@
       "age_days": 71
     },
     {
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "signal_code": "S9",
       "driver_code": "D6",
       "signal_name": "Supply and capacity commitments, $B",
@@ -495,7 +495,7 @@
   "events": [
     {
       "id": 8,
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "signal_code": "S1",
       "step_no": 1,
       "milestone": "Big-4 Q4 CY26 capex at or above the low end of each company's guidance",
@@ -510,7 +510,7 @@
     },
     {
       "id": 4,
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "signal_code": "S3",
       "step_no": 1,
       "milestone": "NVIDIA discloses Rubin share (or revenue) of Data Center at the Q3 FY27 earnings call",
@@ -525,7 +525,7 @@
     },
     {
       "id": 5,
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "signal_code": "S4",
       "step_no": 1,
       "milestone": "NVIDIA discloses Data Center revenue split by Hyperscale vs ACIE",
@@ -540,7 +540,7 @@
     },
     {
       "id": 6,
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "signal_code": "S5",
       "step_no": 1,
       "milestone": "Q3 FY27 GAAP gross margin lands inside the guided 73.5%-74.5% range",
@@ -555,7 +555,7 @@
     },
     {
       "id": 1,
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "signal_code": "S6",
       "step_no": 1,
       "milestone": "US export rule allows NVIDIA data center GPU sales to China in material volume",
@@ -570,7 +570,7 @@
     },
     {
       "id": 2,
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "signal_code": "S6",
       "step_no": 2,
       "milestone": "NVIDIA reports China data center compute revenue above 1% of Data Center revenue",
@@ -585,7 +585,7 @@
     },
     {
       "id": 3,
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "signal_code": "S6",
       "step_no": 3,
       "milestone": "NVIDIA guidance includes China data center compute revenue",
@@ -600,7 +600,7 @@
     },
     {
       "id": 9,
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "signal_code": "S6",
       "step_no": 4,
       "milestone": "Q3 FY27 results (2026-11-17): check China Data Center commentary and whether the Q4 outlook still assumes no China compute revenue",
@@ -615,7 +615,7 @@
     },
     {
       "id": 7,
-      "ticker": "TEST",
+      "ticker": "NVDA",
       "signal_code": "S7",
       "step_no": 1,
       "milestone": "Thesis breaker: inventory grows faster than revenue for two consecutive quarters",
@@ -769,6 +769,272 @@
       "url": "https://nvidianews.nvidia.com/news/nvidia-sets-conference-call-for-third-quarter-financial-results-6928873",
       "tier": "A",
       "accessed_on": "2026-11-05"
+    }
+  ],
+  "financials": [
+    {
+      "metric": "rev_data_center",
+      "period_end": "2024-10-27",
+      "fiscal_period": "Q3 FY25",
+      "value": 30771000000
+    },
+    {
+      "metric": "operating_income",
+      "period_end": "2024-10-27",
+      "fiscal_period": "Q3 FY25",
+      "value": 21869000000
+    },
+    {
+      "metric": "gross_profit",
+      "period_end": "2024-10-27",
+      "fiscal_period": "Q3 FY25",
+      "value": 26156000000
+    },
+    {
+      "metric": "revenue",
+      "period_end": "2024-10-27",
+      "fiscal_period": "Q3 FY25",
+      "value": 35082000000
+    },
+    {
+      "metric": "gross_profit",
+      "period_end": "2025-01-26",
+      "fiscal_period": "Q4 FY25",
+      "value": 28722000000
+    },
+    {
+      "metric": "rev_data_center",
+      "period_end": "2025-01-26",
+      "fiscal_period": "Q4 FY25",
+      "value": 35580000000
+    },
+    {
+      "metric": "operating_income",
+      "period_end": "2025-01-26",
+      "fiscal_period": "Q4 FY25",
+      "value": 24033000000
+    },
+    {
+      "metric": "revenue",
+      "period_end": "2025-01-26",
+      "fiscal_period": "Q4 FY25",
+      "value": 39331000000
+    },
+    {
+      "metric": "operating_income",
+      "period_end": "2025-04-27",
+      "fiscal_period": "Q1 FY26",
+      "value": 21638000000
+    },
+    {
+      "metric": "rev_data_center",
+      "period_end": "2025-04-27",
+      "fiscal_period": "Q1 FY26",
+      "value": 39112000000
+    },
+    {
+      "metric": "revenue",
+      "period_end": "2025-04-27",
+      "fiscal_period": "Q1 FY26",
+      "value": 44062000000
+    },
+    {
+      "metric": "rev_acie",
+      "period_end": "2025-04-27",
+      "fiscal_period": "Q1 FY26",
+      "value": 16852000000
+    },
+    {
+      "metric": "rev_hyperscale",
+      "period_end": "2025-04-27",
+      "fiscal_period": "Q1 FY26",
+      "value": 22260000000
+    },
+    {
+      "metric": "gross_profit",
+      "period_end": "2025-04-27",
+      "fiscal_period": "Q1 FY26",
+      "value": 26668000000
+    },
+    {
+      "metric": "rev_edge_computing",
+      "period_end": "2025-04-27",
+      "fiscal_period": "Q1 FY26",
+      "value": 4950000000
+    },
+    {
+      "metric": "rev_edge_computing",
+      "period_end": "2025-07-27",
+      "fiscal_period": "Q2 FY26",
+      "value": 5647000000
+    },
+    {
+      "metric": "rev_hyperscale",
+      "period_end": "2025-07-27",
+      "fiscal_period": "Q2 FY26",
+      "value": 24168000000
+    },
+    {
+      "metric": "rev_acie",
+      "period_end": "2025-07-27",
+      "fiscal_period": "Q2 FY26",
+      "value": 16928000000
+    },
+    {
+      "metric": "revenue",
+      "period_end": "2025-07-27",
+      "fiscal_period": "Q2 FY26",
+      "value": 46743000000
+    },
+    {
+      "metric": "rev_data_center",
+      "period_end": "2025-07-27",
+      "fiscal_period": "Q2 FY26",
+      "value": 41096000000
+    },
+    {
+      "metric": "operating_income",
+      "period_end": "2025-07-27",
+      "fiscal_period": "Q2 FY26",
+      "value": 28440000000
+    },
+    {
+      "metric": "gross_profit",
+      "period_end": "2025-07-27",
+      "fiscal_period": "Q2 FY26",
+      "value": 33853000000
+    },
+    {
+      "metric": "rev_data_center",
+      "period_end": "2025-10-26",
+      "fiscal_period": "Q3 FY26",
+      "value": 51215000000
+    },
+    {
+      "metric": "revenue",
+      "period_end": "2025-10-26",
+      "fiscal_period": "Q3 FY26",
+      "value": 57006000000
+    },
+    {
+      "metric": "gross_profit",
+      "period_end": "2025-10-26",
+      "fiscal_period": "Q3 FY26",
+      "value": 41849000000
+    },
+    {
+      "metric": "operating_income",
+      "period_end": "2025-10-26",
+      "fiscal_period": "Q3 FY26",
+      "value": 36010000000
+    },
+    {
+      "metric": "rev_data_center",
+      "period_end": "2026-01-25",
+      "fiscal_period": "Q4 FY26",
+      "value": 62314000000
+    },
+    {
+      "metric": "operating_income",
+      "period_end": "2026-01-25",
+      "fiscal_period": "Q4 FY26",
+      "value": 44299000000
+    },
+    {
+      "metric": "gross_profit",
+      "period_end": "2026-01-25",
+      "fiscal_period": "Q4 FY26",
+      "value": 51093000000
+    },
+    {
+      "metric": "revenue",
+      "period_end": "2026-01-25",
+      "fiscal_period": "Q4 FY26",
+      "value": 68127000000
+    },
+    {
+      "metric": "rev_edge_computing",
+      "period_end": "2026-04-26",
+      "fiscal_period": "Q1 FY27",
+      "value": 6369000000
+    },
+    {
+      "metric": "operating_income",
+      "period_end": "2026-04-26",
+      "fiscal_period": "Q1 FY27",
+      "value": 53536000000
+    },
+    {
+      "metric": "rev_hyperscale",
+      "period_end": "2026-04-26",
+      "fiscal_period": "Q1 FY27",
+      "value": 43051000000
+    },
+    {
+      "metric": "revenue",
+      "period_end": "2026-04-26",
+      "fiscal_period": "Q1 FY27",
+      "value": 81615000000
+    },
+    {
+      "metric": "rev_acie",
+      "period_end": "2026-04-26",
+      "fiscal_period": "Q1 FY27",
+      "value": 32195000000
+    },
+    {
+      "metric": "gross_profit",
+      "period_end": "2026-04-26",
+      "fiscal_period": "Q1 FY27",
+      "value": 61157000000
+    },
+    {
+      "metric": "rev_data_center",
+      "period_end": "2026-04-26",
+      "fiscal_period": "Q1 FY27",
+      "value": 75246000000
+    },
+    {
+      "metric": "revenue",
+      "period_end": "2026-07-26",
+      "fiscal_period": "Q2 FY27",
+      "value": 96221000000
+    },
+    {
+      "metric": "rev_data_center",
+      "period_end": "2026-07-26",
+      "fiscal_period": "Q2 FY27",
+      "value": 89023000000
+    },
+    {
+      "metric": "rev_hyperscale",
+      "period_end": "2026-07-26",
+      "fiscal_period": "Q2 FY27",
+      "value": 48710000000
+    },
+    {
+      "metric": "gross_profit",
+      "period_end": "2026-07-26",
+      "fiscal_period": "Q2 FY27",
+      "value": 72142000000
+    },
+    {
+      "metric": "operating_income",
+      "period_end": "2026-07-26",
+      "fiscal_period": "Q2 FY27",
+      "value": 63734000000
+    },
+    {
+      "metric": "rev_edge_computing",
+      "period_end": "2026-07-26",
+      "fiscal_period": "Q2 FY27",
+      "value": 7198000000
+    },
+    {
+      "metric": "rev_acie",
+      "period_end": "2026-07-26",
+      "fiscal_period": "Q2 FY27",
+      "value": 40313000000
     }
   ]
 }

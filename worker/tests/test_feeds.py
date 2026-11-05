@@ -160,3 +160,53 @@ def test_fetch_gives_up_after_retries(monkeypatch):
     monkeypatch.setattr(sec, "_cache", {})
     with pytest.raises(TimeoutError):
         sec.fetch("https://www.sec.gov/cgi-bin/browse-edgar?x")
+
+
+def test_numbers_inside_text_blocks_are_read():
+    doc = IXBRL.replace(
+        '<ix:nonFraction name="us-gaap:InventoryNet"',
+        '<ix:nonNumeric name="us-gaap:InventoryDisclosureTextBlock" contextRef="q">Inventory note: '
+        '<ix:nonFraction name="us-gaap:InventoryNet"').replace(
+        '31,575</ix:nonFraction>', '31,575</ix:nonFraction> more text</ix:nonNumeric>')
+    facts = sec.xbrl_facts(doc)
+    assert sec.pick(facts, "us-gaap:InventoryNet", dt.date(2026, 7, 26)).value == 31_575_000_000
+
+
+def test_fiscal_labels():
+    from worker.financials import fiscal_label
+    D = dt.date
+    assert fiscal_label(D(2026, 7, 26), 1) == "Q2 FY27"
+    assert fiscal_label(D(2026, 4, 26), 1) == "Q1 FY27"
+    assert fiscal_label(D(2026, 1, 25), 1) == "Q4 FY26"
+    assert fiscal_label(D(2026, 10, 25), 1) == "Q3 FY27"
+    assert fiscal_label(D(2027, 1, 31), 1) == "Q4 FY27"
+    assert fiscal_label(D(2026, 9, 30), 12) == "Q3 CY26"
+    assert fiscal_label(D(2026, 12, 31), 12) == "Q4 CY26"
+    assert fiscal_label(D(2026, 9, 30), 6) == "Q1 FY27"       # Microsoft: year ends in June
+
+
+def test_fourth_quarter_is_derived_and_newest_filing_wins():
+    from worker.financials import quarters_from_reports
+    D = dt.date
+    def F(v, s, e): return sec.Fact("us-gaap:Revenues", v, s, e, {})
+    newest = [F(10.0, D(2026, 1, 26), D(2026, 4, 26))]                                  # Q1 FY27
+    tenk = [F(100.0, D(2025, 1, 27), D(2026, 1, 25)),                                   # FY26 total
+            F(20.0, D(2025, 7, 28), D(2025, 10, 26))]                                    # Q3 FY26
+    older = [F(25.0, D(2025, 4, 28), D(2025, 7, 27)), F(30.0, D(2025, 1, 27), D(2025, 4, 27)),
+             F(999.0, D(2025, 7, 28), D(2025, 10, 26))]                                  # stale Q3 (restated later)
+    rows = quarters_from_reports([("new", newest), ("10k", tenk), ("old", older)],
+                                 {"revenue": {"concept": "us-gaap:Revenues"}}, 1, 8)
+    got = {r["fiscal_period"]: r["value"] for r in rows}
+    assert got == {"Q1 FY27": 10.0, "Q4 FY26": 25.0, "Q3 FY26": 20.0, "Q2 FY26": 25.0, "Q1 FY26": 30.0}
+
+
+def test_restated_previous_quarter_comes_from_six_month_figure():
+    from worker.financials import quarters_from_reports
+    D = dt.date
+    def F(v, s, e): return sec.Fact("us-gaap:Revenues", v, s, e, {"ProductOrServiceAxis": "HyperscaleMember"})
+    newest = [F(48.710, D(2026, 4, 27), D(2026, 7, 26)), F(91.761, D(2026, 1, 26), D(2026, 7, 26))]
+    older = [F(37.869, D(2026, 1, 26), D(2026, 4, 26))]          # as first reported, before the recast
+    rows = quarters_from_reports([("q2", newest), ("q1", older)],
+                                 {"h": {"concept": "us-gaap:Revenues", "dims": {"ProductOrServiceAxis": "HyperscaleMember"}}}, 1, 8)
+    got = {r["fiscal_period"]: round(r["value"], 3) for r in rows}
+    assert got == {"Q2 FY27": 48.71, "Q1 FY27": 43.051}

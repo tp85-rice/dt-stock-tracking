@@ -148,8 +148,13 @@ def xbrl_facts(doc: str) -> list[Fact]:
             contexts[m.group(1)] = (None, _date(i.group(1)), dims)
 
     facts: dict[tuple, Fact] = {}
-    for m in re.finditer(r"<ix:(nonFraction|nonNumeric)([^>]*)>(.*?)</ix:\1>", doc, re.S):
-        kind, attrs, raw = m.groups()
+    # Two separate passes: a nonNumeric text block can wrap many nonFraction facts, so one combined pattern
+    # would swallow every number inside long text blocks.
+    matches = [("nonFraction", m) for m in re.finditer(r"<ix:nonFraction([^>]*)>(.*?)</ix:nonFraction>", doc, re.S)]
+    matches += [("nonNumeric", m) for m in re.finditer(r"<ix:nonNumeric([^>]*)>(.*?)</ix:nonNumeric>", doc, re.S)
+                if 'name="dei:' in m.group(1)]
+    for kind, m in matches:
+        attrs, raw = m.groups()
         name = re.search(r'name="([^"]+)"', attrs)
         ctx = re.search(r'contextRef="([^"]+)"', attrs)
         if not name or not ctx or ctx.group(1) not in contexts:

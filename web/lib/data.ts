@@ -60,7 +60,7 @@ export async function getTickerPage(symbol: string): Promise<TickerPage | null> 
     .maybeSingle();
   if (!ticker) return null;
 
-  const [drivers, signals, history, events, sources, baseCase] = await Promise.all([
+  const [drivers, signals, history, events, sources, baseCase, financials] = await Promise.all([
     supabase.from("v_driver_status").select("*").eq("ticker", symbol).order("code"),
     supabase.from("v_signal_latest").select("*").eq("ticker", symbol).order("signal_code"),
     supabase
@@ -78,8 +78,10 @@ export async function getTickerPage(symbol: string): Promise<TickerPage | null> 
       .eq("case_type", "Consensus")
       .order("snapshot_date", { ascending: false })
       .limit(1),
+    supabase.from("financials").select("metric, period_end, fiscal_period, value").eq("ticker", symbol)
+      .order("period_end"),
   ]);
-  for (const r of [drivers, signals, history, events, sources, baseCase]) {
+  for (const r of [drivers, signals, history, events, sources, baseCase, financials]) {
     if (r.error) throw new Error(`Could not load ${symbol}: ${r.error.message}`);
   }
   return {
@@ -90,6 +92,7 @@ export async function getTickerPage(symbol: string): Promise<TickerPage | null> 
     history: history.data ?? [],
     events: events.data ?? [],
     sources: sources.data ?? [],
+    financials: financials.data ?? [],
   };
 }
 

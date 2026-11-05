@@ -12,6 +12,13 @@ Things the owners (Thao, Duong) need to come back to. Each has Claude's suggesti
   *Suggestion:* 0.7%, so YELLOW = inside the guidance band, RED = below it.
 - [x] ~~4. Keep S4 (non-hyperscale demand)?~~ Resolved 2026-11-05: NVIDIA discloses the "AI Clouds, Industrial & Enterprise" split, so S4 stays (with a definition-change flag for the recasts).
 
+## Charts
+
+- [ ] **6. A share-price source for valuation history** (P/E, EV/Sales over time). SEC filings have no prices, and
+  Sharadar may not be shown on a hosted site.
+  *Suggestion:* a free end-of-day price source whose terms allow showing derived ratios on an invite-only site
+  (check the terms first), loaded daily; until then the charts show revenue and margins only.
+
 ## Thesis work
 
 - [ ] **5. Share of price per driver** (Drivers column O) is blank.
