@@ -48,3 +48,32 @@ jobs:
 
       - name: Run tests
         run: python -m pytest worker/tests -q -rs
+
+  web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install packages
+        run: npm ci
+
+      - name: No advice wording in the app (house rule)
+        run: npm run check:wording
+
+      - name: Type-check and build
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+          # Placeholders: the build does not contact Supabase.
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: build-placeholder
+        run: npm run build
