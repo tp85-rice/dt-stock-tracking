@@ -36,6 +36,19 @@ async function verifyCode(formData: FormData) {
   redirect("/");
 }
 
+async function signInWithPassword(formData: FormData) {
+  "use server";
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const password = String(formData.get("password") ?? "");
+  if (!EMAIL_RE.test(email) || !password) redirect(`/login?e=pw&email=${encodeURIComponent(email)}`);
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) {
+    redirect(`/login?e=${error.status === 429 ? "rate" : "pw"}&email=${encodeURIComponent(email)}`);
+  }
+  redirect("/");
+}
+
 export default async function Login({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const sp = await searchParams;
   const email = sp.email ?? "";
@@ -61,15 +74,26 @@ export default async function Login({ searchParams }: { searchParams: Promise<Re
           </>
         ) : (
           <>
-            <p className="muted small">Invite only. Enter your email and we'll send you a sign-in code.</p>
-            <form action={sendCode} className="search" style={{ margin: 0 }}>
-              <input type="email" name="email" required placeholder="you@example.com" aria-label="Email" defaultValue={email} />
-              <button className="primary" type="submit">Send code</button>
+            <p className="muted small">Invite only. Accounts are created by an owner.</p>
+            <form action={signInWithPassword} className="stack" style={{ margin: 0 }}>
+              <input type="email" name="email" required placeholder="you@example.com" aria-label="Email"
+                autoComplete="username" defaultValue={email} />
+              <input type="password" name="password" required placeholder="Password" aria-label="Password"
+                autoComplete="current-password" />
+              <button className="primary" type="submit">Sign in</button>
             </form>
+            <details>
+              <summary className="small">No password? Email me a sign-in code</summary>
+              <form action={sendCode} className="search">
+                <input type="email" name="email" required placeholder="you@example.com" aria-label="Email for code" defaultValue={email} />
+                <button className="primary" type="submit">Send code</button>
+              </form>
+            </details>
           </>
         )}
+        {sp.e === "pw" && <p className="small" role="alert">Email or password not recognised. Ask an owner to check your account.</p>}
         {sp.e === "code" && <p className="small" role="alert">That code didn't work. Check it, or request a new one.</p>}
-        {sp.e === "rate" && <p className="small" role="alert">Too many emails were sent just now. Wait a minute, then try again.</p>}
+        {sp.e === "rate" && <p className="small" role="alert">Too many attempts just now. Wait a minute, then try again.</p>}
         {sp.e === "missing" && <p className="small" role="alert">Enter a valid email address.</p>}
         {sp.e === "link" && (
           <p className="small" role="alert">

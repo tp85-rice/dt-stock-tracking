@@ -1,7 +1,7 @@
 <html><head><meta charset="utf-8"></head><body>
 <h1>dt-dashboard: Project Status</h1>
 <!-- Source of truth: docs/STATUS.html in the repo. Each update is uploaded as a new Google Doc "dt-dashboard — Project Status v-N"; older versions can be deleted. -->
-<p><b>Version:</b> v-3 &nbsp;·&nbsp; <b>Last updated:</b> 2026-11-05 by Claude &nbsp;·&nbsp; <b>Owners:</b> Thao (tp85), Duong</p>
+<p><b>Version:</b> v-4 &nbsp;·&nbsp; <b>Last updated:</b> 2026-11-05 by Claude &nbsp;·&nbsp; <b>Owners:</b> Thao (tp85), Duong</p>
 <p>This doc is the one-page status of the stock driver tracker: what is done, what is next, what needs a decision. Claude publishes a new numbered version (v-0, v-1, v-2, ...) at the end of each work session that changes anything; the highest number is current and older versions can be deleted. Comments do not carry over to the next version, so put lasting notes in the repo or tell Claude. The detailed plan lives in the game plan doc; the code lives in GitHub.</p>
 
 <h2>Where things stand</h2>
@@ -11,7 +11,7 @@
 <tr><td>M1 Database, colour rules, import</td><td>Done</td><td>Tables, colour rules and access rules live on Supabase. Import script and 78 automated tests.</td></tr>
 <tr><td>Template v2 and driver-sheet skill</td><td>Done (merged 2026-11-05)</td><td>Adds driver type, share of price, binding constraint, kill switch, threshold anchor, event kinds, Thesis rows and the Withheld rule (a withheld metric turns RED). Database change applied to Supabase.</td></tr>
 <tr><td>NVDA driver sheet</td><td>Draft, unreviewed</td><td>6 drivers, 9 signals, 15 readings from SEC filings. All signals GREY until consensus base case rows are added (decision 1).</td></tr>
-<tr><td>M2 Read-only dashboard on Vercel</td><td>Merged 2026-11-05; deployed by Vercel, first login to be checked by you</td><td>Invite-only email login, ticker list, NVDA page with driver cards, signal status, history, milestones and sources. Checked on desktop, dark mode and phone using sample data. Vercel and Supabase settings done. Login against the real Supabase project not yet tested.</td></tr>
+<tr><td>M2 Read-only dashboard on Vercel</td><td>Live on Vercel (2026-11-05); first sign-in being checked</td><td>Invite-only email login, ticker list, NVDA page with driver cards, signal status, history, milestones and sources. Checked on desktop, dark mode and phone using sample data. Fixes after launch: Vercel framework setting, clear 'site not configured' page, and sign-in by email + password (no email needed). Emailed codes work once SMTP is set up (optional, later).</td></tr>
 <tr><td>M3 Approval screen</td><td>Next</td><td>Review queue to approve, edit or reject proposed readings.</td></tr>
 <tr><td>M4 SEC / FRED data feeds and charts</td><td>Not started</td><td></td></tr>
 <tr><td>M5 AI analyst agents</td><td>Not started</td><td>Needs the 20-30 case gold set first (Duong).</td></tr>
@@ -48,7 +48,8 @@
 
 <h2>Your to-dos</h2>
 <ul>
-<li><b>Check the website:</b> open the production address, sign in with your email link (same browser), and confirm you reach the ticker list. If anything fails, tell Claude what you see.</li>
+<li><b>Sign in on the website</b> with your email and the password you set when creating your Supabase user, and confirm you reach the ticker list. If you don't remember it, re-create the user (SETUP guide section 6, step 6). Tell Claude what you see.</li>
+<li>Later, before inviting viewers: set up SMTP so emailed sign-in codes work (SETUP section 6, step 6).</li>
 <li>Make sure you and Duong are in the members list (SETUP section 3), or the site shows no data.</li>
 <li>Import the NVDA sheet for real once you have reviewed it (SETUP section 4), so it shows on the website.</li>
 <li>Confirm Duong has access to GitHub, Supabase and Vercel.</li>
@@ -59,6 +60,7 @@
 <h2>Links</h2>
 <ul>
 <li>Code: https://github.com/tp85-rice/dt-stock-tracking</li>
+<li>Pull requests #4 to #6 (launch fixes): https://github.com/tp85-rice/dt-stock-tracking/pull/6</li>
 <li>Pull request #3 (M2 website, merged): https://github.com/tp85-rice/dt-stock-tracking/pull/3</li>
 <li>Pull request #1 (merged): https://github.com/tp85-rice/dt-stock-tracking/pull/1</li>
 <li>Game plan (Claude doc): https://claude.ai/artifact/U9v7CjHS84jbmK59kZk7wa</li>
@@ -67,6 +69,7 @@
 
 <h2>Change log</h2>
 <ul>
+<li>2026-11-05 (v-4): Website live. Fixed the Vercel framework setting (#4), added a clear 'site not configured' page and sign-in by emailed code or Continue link (#5). Supabase needs SMTP for custom emails, so sign-in by email + password added (#6). Waiting on a first successful sign-in.</li>
 <li>2026-11-05 (v-3): Vercel settings done; pull request #3 merged, website deployed. First login to be checked.</li>
 <li>2026-11-05 (v-2): Pull request #2 merged (numbered status docs). M2 website built and opened as pull request #3; waiting on Vercel and Supabase settings.</li>
 <li>2026-11-05 (v-1): Pull request #1 merged; template v2 live on Supabase. Status doc now published as numbered versions.</li>

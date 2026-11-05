@@ -101,23 +101,28 @@ The web app lives in `web/`. Vercel needs four settings; Supabase needs to know 
      `https://*-<your-vercel-team>.vercel.app/auth/callback`.
 5. **Authentication > Sign In / Providers > Email**: Email enabled. Turn **off** "Allow new users to sign up"
    (invite only; the login form never creates accounts either).
-6. **Authentication > Emails > Magic Link** template (so sign-in survives university mail scanners and works in any
-   browser). Replace the message body with:
-   ```html
-   <h2>Sign in to Driver Tracker</h2>
-   <p>Your sign-in code: <strong>{{ .Token }}</strong></p>
-   <p>Type it on the sign-in page, or <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email">open this link</a> and press Continue.</p>
-   ```
-   Mail scanners (e.g. Microsoft Safe Links) open every link in an email, which used up the old one-time link before
-   you could. They cannot type the code or press Continue.
+6. **Sign-in method.** The site signs people in with **email + password**; no email is sent, so no SMTP is needed.
+   - An owner creates each account in Supabase: **Authentication > Users > Add user > Create new user**, with a
+     password and **Auto Confirm User** ticked. Send the password to the person privately.
+   - To change a password: **Authentication > Users >** the user **> Reset password** (needs SMTP), or delete and
+     re-create the user, then re-add them to `members`.
+   - Optional, later (before inviting viewers): set up SMTP so the "Email me a sign-in code" option works.
+     Supabase's built-in sender cannot use custom templates. **Project Settings > Authentication > SMTP Settings**:
+     e.g. a Gmail account with 2-step verification and an App Password (host `smtp.gmail.com`, port `465`, user =
+     the Gmail address, password = the 16-character app password). Then **Authentication > Emails > Magic Link**,
+     replace the body with:
+     ```html
+     <h2>Sign in to Driver Tracker</h2>
+     <p>Your sign-in code: <strong>{{ .Token }}</strong></p>
+     <p>Type it on the sign-in page, or <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email">open this link</a> and press Continue.</p>
+     ```
+     (A code instead of a plain link, because university mail scanners open links and use them up.)
 7. Make sure you and Duong are in `members` (section 3). Only members see any data.
 
-**Check it:** open the production address, enter your email, then type the code from the email (or open its link
-and press Continue). You should see the ticker list. A ticker only appears after its sheet is imported (section 4).
+**Check it:** open the production address, sign in with your email and the password you set in Supabase. You should
+see the ticker list. A ticker only appears after its sheet is imported (section 4).
 
 Notes:
-- Supabase's built-in email sender allows only a few emails per hour. Fine for a few invited people; add your own
-  SMTP sender later if links stop arriving.
 - Local preview without Supabase: `cd web && npm install && npm run build && DATA_SOURCE=fixtures npx next start`,
   then open http://localhost:3000/t/NVDA. Fixture mode is refused on Vercel production.
 
