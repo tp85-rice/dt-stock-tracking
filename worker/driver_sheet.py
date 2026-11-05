@@ -214,7 +214,8 @@ def _rows(ws, sheet: DriverSheet, cols: str):
 REQUIRED_TABS = ["README", "Drivers", "Signals", "Base case", "Event ladder", "Source log", "Scoring log"]
 
 
-def parse(path: str | Path, ticker_override: str | None = None) -> DriverSheet:
+def parse(path: str | Path, ticker_override: str | None = None, allow_rename: bool = False) -> DriverSheet:
+    """allow_rename: let ticker_override replace a different README ticker (used for --test trial imports)."""
     path = Path(path)
     sheet = DriverSheet(path=path)
     try:
@@ -229,7 +230,7 @@ def parse(path: str | Path, ticker_override: str | None = None) -> DriverSheet:
                                   f"missing tabs {missing}; is this a copy of stock_driver_template.xlsx?"))
         return sheet
 
-    _parse_readme(wb["README"], sheet, ticker_override)
+    _parse_readme(wb["README"], sheet, ticker_override, allow_rename)
     _parse_sources(wb["Source log"], sheet)
     _parse_drivers(wb["Drivers"], sheet)
     _parse_signals(wb["Signals"], sheet)
@@ -240,12 +241,12 @@ def parse(path: str | Path, ticker_override: str | None = None) -> DriverSheet:
     return sheet
 
 
-def _parse_readme(ws, sheet: DriverSheet, override: str | None) -> None:
+def _parse_readme(ws, sheet: DriverSheet, override: str | None, allow_rename: bool = False) -> None:
     ticker = _text(ws["B2"].value)
     ticker = ticker.upper() if ticker else None
     if override:
         override = override.upper()
-        if ticker and ticker != override:
+        if ticker and ticker != override and not allow_rename:
             sheet.issues.append(Issue("error", "README", 2,
                                       f"ticker in sheet is {ticker} but --ticker {override} was given"))
         ticker = override

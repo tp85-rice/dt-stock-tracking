@@ -143,7 +143,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--quiet", action="store_true", help="hide warnings")
     args = ap.parse_args(argv)
 
-    sheet = parse(args.path, ticker_override=args.ticker)
+    # A trial import may load any sheet under a test ticker (e.g. --ticker TEST --test).
+    sheet = parse(args.path, ticker_override=args.ticker, allow_rename=args.test)
     for issue in sheet.errors + ([] if args.quiet else sheet.warnings):
         print(issue)
     print(sheet.summary())

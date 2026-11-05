@@ -1,55 +1,77 @@
 # NVDA research notes
 
-Built 2026-11-04 by the driver-sheet-builder skill. Status: **structure only, no numbers in the sheet.**
+Refreshed 2026-11-05 by the driver-sheet-builder skill. Every figure below was read from a page opened on www.sec.gov or nvidianews.nvidia.com (inline XBRL facts or the filing text). Source IDs match the sheet's Source log.
 
-The build environment's network allowlist blocked every primary source (www.sec.gov, nvidianews.nvidia.com, investor.nvidia.com, pr.tsmc.com, Yahoo Finance), so no page could be opened. Under the skill's rules a number that was not read from an opened page is not entered. Everything below is a **lead from web-search summaries: UNVERIFIED, do not import as is**. Each lead names where to check it.
+Still blocked from the build environment: data.sec.gov, reuters.com, Yahoo Finance (proxy), and investor.nvidia.com, pr.tsmc.com, ir.aboutamazon.com, abc.xyz, investor.atmeta.com (the sites refuse automated requests). So **no analyst consensus yet**.
 
-## Leads to verify (unverified)
+## Verified facts
 
-| Item | Lead | Period | Where to verify | Signal |
+### NVIDIA (fiscal Q2 FY27 = Apr 27 to Jul 26 2026)
+
+| Item | Q1 FY27 | Q2 FY27 | Q2 FY26 | Source |
 |---|---|---|---|---|
-| Earnings release date for Q2 FY27 | 2026-08-26 | Q2 FY27 (qtr ended Jul 26 2026) | R2 | — |
-| Total revenue | about $96.2B, +106% YoY | Q2 FY27 | R2 | — |
-| Data Center revenue | about $89.0B, +117% YoY | Q2 FY27 | R2 | context for S4 |
-| Gross margin | 75.0% (GAAP or non-GAAP unclear) vs 72.4% a year earlier | Q2 FY27 | R1, R2 | S5 |
-| Inventory provisions | $985M, partly offset by a $177M release | Q2 FY27 | R1 | S7 context |
-| Supply commitments | $279B vs $119B prior quarter, mostly memory | Q2 FY27 | R1 | S9 |
-| China | Hopper DC shipments to China under 1% of Data Center revenue; Q3 guide assumes no China DC compute revenue | Q2 FY27 / Q3 guide | R2 | S6 |
-| Q3 FY27 outlook | revenue about $108.0B ±2%; gross margin about 74% ±50 bp (GAAP vs non-GAAP labelled inconsistently) | Q3 FY27 | R2 | S5 Management row |
-| Margin trough | call remarks reportedly say margin bottoms at 71–72% in Q4 FY27 | Q4 FY27 | call transcript / R2 | S5 anchor |
-| Possible definition change | an "Edge Computing" line of about $7.2B, +27% YoY | Q2 FY27 | R2 | new market platform? |
-| Q3 FY27 earnings date | Tue 2026-11-17 (announced Oct 28); some calendars show Nov 18 | Q3 FY27 | investor.nvidia.com | Disclosure steps' target date |
-| Consensus Q3 FY27 revenue | "closer to $104B" (no source or date) | Q3 FY27 | R8 | — |
-| Amazon capex | purchases of P&E about $54.2B (Q2 CY26), about $77.3B (Q3 CY26); 2026 guide about $220B | Q2/Q3 CY26 | R3 | S1 |
-| Alphabet capex | 2026 guide $195–205B, unchanged on the Oct 28 call; quarterly figures not found | 2026 | R4 | S1 |
-| Microsoft capex | $45.2B incl. finance leases (FY27 Q1); a second source says about $170B for CY2026 | FY27 Q1 | R5 | S1 |
-| Meta capex | 2026 guide $130–145B; quarterly not found | 2026 | R6 | S1 |
-| TSMC Sep 2026 revenue | NT$511.86B, +54.6% YoY, −0.6% MoM; Q3 NT$1,494.24B | Sep 2026 | R7 | S2 |
-| Export controls | Jan 13 2026: case-by-case H200 licensing with a 25% fee; Jul 2026: H200 shipping "in very small quantities" | 2026 | R9 | S6 |
+| Revenue, $B | 81.615 | 96.221 | 46.743 | R11, R1 |
+| Gross profit, $B | 61.157 | 72.142 | 33.853 | R11, R1 |
+| GAAP gross margin | 74.9% | 75.0% (74.98%) | 72.4% | computed; R2 states 75.0% |
+| Data Center revenue, $B | 75.246 | 89.023 | 41.096 | R1 |
+| Hyperscale, $B | 43.050 (recast; 37.869 as first reported) | 48.710 | 24.168 | R1, R10 |
+| AI Clouds, Industrial & Enterprise (ACIE), $B | 32.196 (recast; 37.377 as first reported) | 40.313 | 16.928 | R1, R10 |
+| Edge Computing, $B | 6.369 | 7.198 | 5.647 | R1 |
+| Inventory, $B | 25.797 | 31.575 | | R11, R1 |
+| Accounts receivable, $B | 40.710 | 63.059 | | R11, R1 |
+| DSO, days (company-stated) | 45 | 60 | | R10 |
+| Supply and capacity commitments, $B | 119 | 279 | | R1 |
+| Provisions for inventory and excess purchase obligations | | $985M (net GM impact −0.8 pt) | | R1 |
+| China | | Hopper Data Center shipments to China "less than 1% of Data Center revenue" | | R10 |
 
-## Gaps (not found even as leads)
+**Q3 FY27 outlook (R2, R10):** revenue $108.0B ±2%; "NVIDIA is not assuming any Data Center compute revenue from China in its outlook"; GAAP and non-GAAP gross margin 74.0% ±50 bp (the earlier GAAP vs non-GAAP conflict is resolved: both are 74.0%).
 
-- Inventory, accounts receivable and DSO for Q2 FY27 and Q1 FY27 (S7, S8)
-- Whether NVIDIA states Rubin's share of Data Center revenue (S3)
-- Any customer-type split of Data Center revenue (S4)
-- Consensus with a named source: Q3 FY27 revenue, EPS, gross margin; the pre-report Q2 FY27 consensus
-- Alphabet and Meta quarterly capex; a verified Microsoft quarterly figure
-- TSMC Aug 2026 (and Oct 2026, due around Nov 10)
-- Export-licence news Aug–Nov 2026
+**Rubin (R2, R10):** "Vera Rubin platform is ramping into full production"; inventory rose "as we prepare for the introduction of Vera Rubin in the third quarter". No Rubin revenue share disclosed.
 
-## Conflicts
+**Definition changes (R1):** Q1 FY27 new revenue-by-market-platform presentation (Hyperscale / ACIE / Edge Computing), prior periods recast. Q2 FY27: one company moved from ACIE to Hyperscale "due to a change in their business model", prior periods recast.
 
-- Q3 FY27 gross margin guide: GAAP vs non-GAAP labelling differs between secondary sources.
-- Microsoft capex: $45.2B (quarter) vs about $170B (calendar year), not compared like for like.
-- Q3 FY27 earnings date: Nov 17 (company) vs Nov 18 (third-party estimate).
+**Q3 FY27 results call (R20):** Tuesday 2026-11-17, 2 p.m. PT; quarter ended 2026-10-25; CFO commentary published in writing before the call.
 
-## Decisions for the owners
+### Hyperscaler capex (cash purchases of property and equipment, $B; excludes finance leases)
 
-1. Consensus source (R8): which one, given its terms (figures not republished raw)?
-2. Signals with no consensus (S2, S7, S8, S9): use a Thesis row only (GREY until a Consensus row exists) or treat our estimate as the scored base case?
-3. S4: keep only if NVIDIA discloses a customer-type split; otherwise delete it and D3 shows narrative-only.
-4. Share of price for each driver: needs a thesis session (valuation work), left blank.
+| Company | Q1 CY26 | Q2 CY26 | Q3 CY26 | Q3 CY25 | Sources |
+|---|---|---|---|---|---|
+| Amazon (purchases of property and equipment, gross) | 44.203 | 54.208 | 77.259 | 35.095 | R12, R3 |
+| Alphabet | 35.674 | 44.924 | 51.355 | 23.953 | R14, R13, R4 |
+| Microsoft (FY ends June) | 30.876 | 35.802 | 39.367 | 19.394 | R16, R15, R5 |
+| Meta | 18.997 | 30.116 | 33.942 | 18.829 | R18, R17, R6 |
+| **Total** | **129.750** | **165.050** | **201.923** | **97.271** | |
 
-## To finish the sheet
+Quarters are year-to-date minus prior year-to-date where the filing reports only YTD. Q3 CY26 total: +107.6% YoY, +22.3% QoQ. Finance-lease principal payments are excluded (Q3 CY26: Amazon 0.433, Alphabet 1.110, Microsoft 1.000; Meta reports YTD only).
 
-Either allow the hosts below in the environment's network settings and re-run the skill ("Refresh NVDA driver sheet"), or fill the numbers by hand from the sources: www.sec.gov, nvidianews.nvidia.com, investor.nvidia.com, investor.tsmc.com, pr.tsmc.com, ir.aboutamazon.com, abc.xyz, microsoft.com, investor.atmeta.com, reuters.com.
+### TSMC monthly revenue (R19, R7)
+
+| Month | NT$B | YoY | MoM |
+|---|---|---|---|
+| Aug 2026 | 514.81 | +53.3% | +10.1% |
+| Sep 2026 | 511.86 | +54.6% | −0.6% |
+
+October 2026 is due around 2026-11-10.
+
+## Earlier leads: outcome
+
+| Lead (from search summaries, 2026-11-04) | Outcome |
+|---|---|
+| Q2 FY27 revenue ~$96.2B, DC ~$89.0B | Confirmed: 96.221 / 89.023 |
+| Gross margin 75.0%, GAAP or non-GAAP unclear | Confirmed GAAP 75.0% |
+| Supply commitments $279B vs $119B | Confirmed |
+| Q3 guide $108B ±2%, GM 74% ±50 bp, label unclear | Confirmed; GAAP and non-GAAP both 74.0% |
+| Edge Computing ~$7.2B possibly new | Confirmed: new market platform since Q1 FY27 |
+| Amazon capex 54.2 / 77.3 | Confirmed: 54.208 / 77.259 |
+| Microsoft $45.2B incl. finance leases | Not used: our definition excludes finance leases (39.367 cash capex) |
+| TSMC Sep NT$511.86B +54.6% | Confirmed |
+| Earnings date Nov 17 vs Nov 18 | Nov 17 confirmed by the company (R20) |
+| Margin trough 71–72% in Q4 FY27 (call remarks) | Not found in the press release or CFO commentary; the Q3 guide is 74.0%. Dropped |
+| Capex guidance (Amazon ~$220B, Alphabet $195–205B, Meta $130–145B) | Not verified (earnings-call material, sites blocked). Not used |
+| Consensus "closer to $104B" | Not verified. Not used |
+
+## Gaps
+
+- Analyst consensus for Q3 FY27 (revenue, gross margin) and pre-report consensus for Q2 FY27: blocked sources.
+- 2026 capex guidance per hyperscaler (earnings calls, not in 10-Qs).
+- US export-control notices (R9): bis.gov not tried.

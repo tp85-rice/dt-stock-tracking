@@ -107,3 +107,9 @@ def test_import_template_v2_fields(db, tmp_path):
     assert db.execute("select binding_constraint, kill_switch, threshold_anchor from signals").fetchone() == (
         True, True, "guide")
     assert db.execute("select colour, data_status from v_scores").fetchone() == ("RED", "Withheld")
+
+
+def test_cli_trial_import_under_test_ticker(tmp_path, capsys):
+    path = build(tmp_path / "x.xlsx", ticker="NVDA", **minimal())
+    assert main([str(path), "--ticker", "TEST", "--dry-run"]) == 1          # real rename: refused
+    assert main([str(path), "--ticker", "TEST", "--test", "--dry-run"]) == 0  # trial import: allowed
