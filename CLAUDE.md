@@ -11,11 +11,19 @@ decisions, dates):
    line `(v-N)` at the top of the Change log. Commit it with the session's other changes.
 2. Find the current highest version: Google Drive search in folder `11RrJZHSRBhU6ha8x1-pLYYnghZyeCPy5`
    (`dt-dashboard`) for titles containing `dt-dashboard — Project Status v-`. Next version = highest N + 1.
-   Versions so far: v-0 to v-6 (2026-11-05).
+   Versions so far: v-0 to v-7 (2026-11-05).
 3. Upload `docs/STATUS.html` with the Google Drive connector `create_file` (contentMimeType `text/html`,
    parentId = that folder) titled `dt-dashboard — Project Status v-<N>`, then read it back to check it converted.
 4. Never delete, trash or rename older versions; the owners delete them by hand. Tell the owners the new version's link.
 5. Facts only, no advice: no ratings, price targets or buy/sell wording (same rule as the app).
+
+## Merging (standing instruction from the owners, 2026-11-05)
+
+Merge every pull request into `main` without asking, once **all** its checks have passed (worker tests, web build
+and wording check, Vercel preview). Merge with `expectedHeadSha` set to the commit the checks ran on. Do not merge
+if a check failed or is still running: fix it or wait. The owners can switch this off at any time by saying so; if
+they do, record it here. Merging `main` deploys the website and applies database migrations, so tell the owners
+what each merge changed.
 
 ## Other rules
 
