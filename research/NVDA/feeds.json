@@ -1,0 +1,35 @@
+{
+  "_comment": "Which data feed proposes readings for which NVDA signal. Applied by worker.run_feeds before each run. S3 (Rubin share, not disclosed), S6 (export milestones) and S9 (supply commitments, text only) stay manual.",
+  "signals": {
+    "S1": {
+      "adapter": "edgar_capex_sum",
+      "params": {
+        "divide": 1e9,
+        "companies": [
+          {"ticker": "AMZN", "cik": 1018724, "concept": "us-gaap:PaymentsToAcquireProductiveAssets"},
+          {"ticker": "GOOGL", "cik": 1652044, "concept": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment"},
+          {"ticker": "MSFT", "cik": 789019, "concept": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment"},
+          {"ticker": "META", "cik": 1326801, "concept": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment"}
+        ]
+      }
+    },
+    "S2": {"adapter": "tsmc_monthly_yoy", "params": {"cik": 1046179}},
+    "S4": {
+      "adapter": "edgar_xbrl",
+      "params": {"cik": 1045810, "measure": "concept", "concept": "us-gaap:Revenues",
+                 "dims": {"ProductOrServiceAxis": "AICloudsIndustrialEnterpriseMember"}, "divide": 1e9}
+    },
+    "S5": {
+      "adapter": "edgar_xbrl",
+      "params": {"cik": 1045810, "measure": "margin", "numerator": "us-gaap:GrossProfit", "denominator": "us-gaap:Revenues"}
+    },
+    "S7": {
+      "adapter": "edgar_xbrl",
+      "params": {"cik": 1045810, "measure": "concept", "concept": "us-gaap:InventoryNet", "instant": true, "divide": 1e9}
+    },
+    "S8": {
+      "adapter": "edgar_xbrl",
+      "params": {"cik": 1045810, "measure": "dso", "receivables": "us-gaap:AccountsReceivableNetCurrent", "revenue": "us-gaap:Revenues"}
+    }
+  }
+}

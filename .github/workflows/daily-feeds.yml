@@ -1,0 +1,52 @@
+name: daily feeds
+
+# Every day after US market close: read new SEC filings and TSMC monthly reports, and add new readings to the
+# review queue (worker/run_feeds.py). Nothing reaches the dashboard until a reviewer approves it on /review.
+# Can also be started by hand: Actions tab > daily feeds > Run workflow (tick "dry run" to only see what it finds).
+#
+# Uses the repository secret SUPABASE_DB_URL (the same Session pooler string as the migrate workflow).
+
+on:
+  schedule:
+    - cron: "23 22 * * *"    # 22:23 UTC every day
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Only list what would be proposed"
+        type: boolean
+        default: false
+
+concurrency:
+  group: daily-feeds
+  cancel-in-progress: false
+
+jobs:
+  feeds:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: worker/requirements.txt
+
+      - name: Install
+        run: pip install -r worker/requirements.txt
+
+      - name: Run feeds
+        env:
+          DATABASE_URL: ${{ secrets.SUPABASE_DB_URL }}
+          SEC_USER_AGENT: dt-stock-tracking tp85@rice.edu
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::Repository secret SUPABASE_DB_URL is not set (see docs/SETUP.md)"
+            exit 1
+          fi
+          extra=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then extra="--dry-run"; fi
+          set -o pipefail
+          python -m worker.run_feeds $extra | tee feeds.txt
+          { echo '### Daily feeds'; echo '```'; cat feeds.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
