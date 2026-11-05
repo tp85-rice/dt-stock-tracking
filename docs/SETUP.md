@@ -80,9 +80,37 @@ Re-importing the same file is safe. Base cases are never overwritten: if you cha
 - Never point `TEST_DATABASE_URL` (automated tests) at Supabase. The tests refuse to run if you try.
 - Add a dev project before inviting viewers (M6), or as soon as a Supabase slot frees up or we upgrade. Only settings change.
 
-## 6. Vercel (until M2)
+## 6. Put the web app online (owner, once, for M2)
 
-Vercel is connected to the repo, but the web app (`web/`) arrives in M2, so Vercel builds will fail until then. That is expected and harmless. In M2 we will set **Vercel > Project > Settings > General > Root Directory** to `web` and add the environment variables.
+The web app lives in `web/`. Vercel needs four settings; Supabase needs to know the web address.
+
+**In Vercel** (your project, connected to `tp85-rice/dt-stock-tracking`):
+
+1. **Settings > Build and Deployment > Root Directory**: `web`. Framework Preset: Next.js (detected automatically).
+2. **Settings > Environment Variables**, for both Production and Preview:
+   - `NEXT_PUBLIC_SUPABASE_URL` = `https://loyiamqdycxljgcrmfbh.supabase.co`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = Supabase > **Project Settings > API Keys**, the **anon / publishable** key.
+     It is safe in the browser because every table has row level security. Never put the service-role key in Vercel.
+3. **Deployments**: redeploy the latest `main` after saving the variables. Note the production address, e.g. `https://dt-stock-tracking.vercel.app`.
+
+**In Supabase** (project dt-dashboard-prd):
+
+4. **Authentication > URL Configuration**:
+   - Site URL: the production address from step 3.
+   - Redirect URLs: add `https://<production address>/auth/callback` and, for preview deployments,
+     `https://*-<your-vercel-team>.vercel.app/auth/callback`.
+5. **Authentication > Sign In / Providers > Email**: Email enabled. Turn **off** "Allow new users to sign up"
+   (invite only; the login form never creates accounts either).
+6. Make sure you and Duong are in `members` (section 3). Only members see any data.
+
+**Check it:** open the production address, enter your email, click the link in the email (same browser), and you
+should see the ticker list. A ticker only appears after its sheet is imported (section 4).
+
+Notes:
+- Supabase's built-in email sender allows only a few emails per hour. Fine for a few invited people; add your own
+  SMTP sender later if links stop arriving.
+- Local preview without Supabase: `cd web && npm install && npm run build && DATA_SOURCE=fixtures npx next start`,
+  then open http://localhost:3000/t/NVDA. Fixture mode is refused on Vercel production.
 
 ## 7. Anthropic API key (needed from M5)
 
