@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { PasswordForm } from "@/components/PasswordForm";
 
 export const dynamic = "force-dynamic";
 
@@ -36,22 +37,14 @@ async function verifyCode(formData: FormData) {
   redirect("/");
 }
 
-async function signInWithPassword(formData: FormData) {
-  "use server";
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
-  const password = String(formData.get("password") ?? "");
-  if (!EMAIL_RE.test(email) || !password) redirect(`/login?e=pw&email=${encodeURIComponent(email)}`);
-  const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) {
-    redirect(`/login?e=${error.status === 429 ? "rate" : "pw"}&email=${encodeURIComponent(email)}`);
-  }
-  redirect("/");
-}
-
 export default async function Login({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const sp = await searchParams;
   const email = sp.email ?? "";
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (user && !sp.e) redirect("/");
   return (
     <main className="shell" style={{ maxWidth: 460 }}>
       <div className="card stack">
@@ -75,13 +68,7 @@ export default async function Login({ searchParams }: { searchParams: Promise<Re
         ) : (
           <>
             <p className="muted small">Invite only. Accounts are created by an owner.</p>
-            <form action={signInWithPassword} className="stack" style={{ margin: 0 }}>
-              <input type="email" name="email" required placeholder="you@example.com" aria-label="Email"
-                autoComplete="username" defaultValue={email} />
-              <input type="password" name="password" required placeholder="Password" aria-label="Password"
-                autoComplete="current-password" />
-              <button className="primary" type="submit">Sign in</button>
-            </form>
+            <PasswordForm defaultEmail={email} />
             <details>
               <summary className="small">No password? Email me a sign-in code</summary>
               <form action={sendCode} className="search">
