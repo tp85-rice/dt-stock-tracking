@@ -5,6 +5,7 @@ import { StatusChip, EventChip, Arrow } from "@/components/Status";
 import { formatValue } from "@/lib/format";
 import { Sparkline } from "@/components/Sparkline";
 import { NotMember } from "@/components/NotMember";
+import { RevenueChart, MarginChart, PlatformTable } from "@/components/Charts";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +28,7 @@ export default async function TickerPageView({ params }: { params: Promise<{ tic
     );
   }
 
-  const { ticker, baseCase, drivers, signals, history, events, sources } = page;
+  const { ticker, baseCase, drivers, signals, history, events, sources, financials = [] } = page;
   const bySignal = (code: string) => history.filter((h) => h.signal_code === code);
 
   return (
@@ -53,6 +54,16 @@ export default async function TickerPageView({ params }: { params: Promise<{ tic
       </div>
 
       {events.length > 0 && <EventLadder events={events} signals={signals} />}
+      {financials.length > 0 && (
+        <>
+          <h2 className="section-title">Financials</h2>
+          <div className="charts">
+            <RevenueChart rows={financials} />
+            <MarginChart rows={financials} />
+          </div>
+          <PlatformTable rows={financials} />
+        </>
+      )}
       <SourceLog sources={sources} />
     </main>
   );

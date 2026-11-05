@@ -83,6 +83,13 @@ export interface BaseCaseInfo {
   snapshot_date: string | null;
 }
 
+export interface FinancialRow {
+  metric: string;
+  period_end: string;
+  fiscal_period: string | null;
+  value: number;
+}
+
 export interface TickerPage {
   ticker: Ticker;
   baseCase: BaseCaseInfo | null;
@@ -91,6 +98,7 @@ export interface TickerPage {
   history: Observation[];
   events: EventStep[];
   sources: Source[];
+  financials?: FinancialRow[];
 }
 
 export interface QueueItem {

@@ -50,3 +50,16 @@ jobs:
           set -o pipefail
           python -m worker.run_feeds $extra | tee feeds.txt
           { echo '### Daily feeds'; echo '```'; cat feeds.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+      # Chart data (quarterly financials). Skips quickly when the newest filing is already loaded.
+      # The SEC client identification is the default in worker/sec.py.
+      - name: Refresh chart data
+        if: ${{ always() }}
+        env:
+          DATABASE_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          extra=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then extra="--dry-run"; fi
+          set -o pipefail
+          python -m worker.financials $extra | tee financials.txt
+          { echo '### Chart data'; echo '```'; cat financials.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"

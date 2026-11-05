@@ -1,0 +1,15 @@
+{
+  "_comment": "Quarterly figures for the NVDA charts, read from NVIDIA's 10-Q and 10-K filings by worker.financials. Market-platform members changed in Q1 FY27 (Hyperscale / AI Clouds, Industrial & Enterprise / Edge Computing, prior periods recast); the newest filing's figures win.",
+  "cik": 1045810,
+  "fiscal_year_end_month": 1,
+  "quarters": 8,
+  "metrics": {
+    "revenue": {"concept": "us-gaap:Revenues"},
+    "gross_profit": {"concept": "us-gaap:GrossProfit"},
+    "operating_income": {"concept": "us-gaap:OperatingIncomeLoss"},
+    "rev_data_center": {"concept": "us-gaap:Revenues", "dims": {"ProductOrServiceAxis": "DataCenterMember"}},
+    "rev_hyperscale": {"concept": "us-gaap:Revenues", "dims": {"ProductOrServiceAxis": "HyperscaleMember"}},
+    "rev_acie": {"concept": "us-gaap:Revenues", "dims": {"ProductOrServiceAxis": "AICloudsIndustrialEnterpriseMember"}},
+    "rev_edge_computing": {"concept": "us-gaap:Revenues", "dims": {"ProductOrServiceAxis": "EdgeComputingMember"}}
+  }
+}

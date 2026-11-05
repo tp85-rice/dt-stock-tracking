@@ -18,6 +18,7 @@ const page = {
   history: q(`select observation_id, signal_code, observed_on, observed_value, period, colour, data_status from v_scores where ticker = ${t} order by observed_on, observation_id`),
   events: q(`select * from v_event_ladder where ticker = ${t} order by signal_code, step_no`),
   sources: q(`select code, name, url, tier, accessed_on from sources where ticker = ${t} order by id`),
+  financials: q(`select metric, period_end, fiscal_period, value::float8 as value from financials where ticker = ${t} order by period_end`),
 };
 writeFileSync(`fixtures/${as}.json`, JSON.stringify(page, null, 2) + "\n");
 console.log(`Wrote fixtures/${as}.json`);
