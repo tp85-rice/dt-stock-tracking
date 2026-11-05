@@ -2,20 +2,20 @@
 
 ## Project status doc (standing instruction from the owners, 2026-11-05)
 
-At the end of every work session that changes anything (code, research, decisions, dates), update the Google Doc
-**"dt-dashboard — Project Status"** in the owners' Drive folder `dt-dashboard`:
+The owners' organization does not allow the Google Docs connector, so the status doc cannot be edited in place.
+Instead, publish **numbered versions**. At the end of every work session that changes anything (code, research,
+decisions, dates):
 
-- Doc ID: `1zxUk3FWp2L6kxCLImTAaYOCg_E5JoUqc61KYzpn5MhM`
-- Folder ID: `11RrJZHSRBhU6ha8x1-pLYYnghZyeCPy5`
-
-How:
-- Edit the doc **in place** with the Google Docs connector (same file, same link). Update "Last updated", the
-  milestone table, "NVDA at a glance" (or one section per covered ticker), "Decisions waiting for you",
-  "Coming up", "Your to-dos", and add one dated line to the top of the Change log.
-- Keep the owners' comments; never delete the doc or create a replacement.
-- If the Google Docs connector is not available, do not create a second doc: tell the owners in one line that the
-  status doc could not be updated and what changed, so they can turn the connector on.
-- Facts only, no advice: no ratings, price targets or buy/sell wording (same rule as the app).
+1. Edit the source of truth, `docs/STATUS.html`: bump "Version", "Last updated", the milestone table, the
+   per-ticker "at a glance" section(s), "Decisions waiting for you", "Coming up", "Your to-dos", and add one dated
+   line `(v-N)` at the top of the Change log. Commit it with the session's other changes.
+2. Find the current highest version: Google Drive search in folder `11RrJZHSRBhU6ha8x1-pLYYnghZyeCPy5`
+   (`dt-dashboard`) for titles containing `dt-dashboard — Project Status v-`. Next version = highest N + 1.
+   Versions so far: v-0 and v-1 (2026-11-05).
+3. Upload `docs/STATUS.html` with the Google Drive connector `create_file` (contentMimeType `text/html`,
+   parentId = that folder) titled `dt-dashboard — Project Status v-<N>`, then read it back to check it converted.
+4. Never delete, trash or rename older versions; the owners delete them by hand. Tell the owners the new version's link.
+5. Facts only, no advice: no ratings, price targets or buy/sell wording (same rule as the app).
 
 ## Other rules
 

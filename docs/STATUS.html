@@ -1,0 +1,71 @@
+<html><head><meta charset="utf-8"></head><body>
+<h1>dt-dashboard: Project Status</h1>
+<!-- Source of truth: docs/STATUS.html in the repo. Each update is uploaded as a new Google Doc "dt-dashboard — Project Status v-N"; older versions can be deleted. -->
+<p><b>Version:</b> v-1 &nbsp;·&nbsp; <b>Last updated:</b> 2026-11-05 by Claude &nbsp;·&nbsp; <b>Owners:</b> Thao (tp85), Duong</p>
+<p>This doc is the one-page status of the stock driver tracker: what is done, what is next, what needs a decision. Claude publishes a new numbered version (v-0, v-1, v-2, ...) at the end of each work session that changes anything; the highest number is current and older versions can be deleted. Comments do not carry over to the next version, so put lasting notes in the repo or tell Claude. The detailed plan lives in the game plan doc; the code lives in GitHub.</p>
+
+<h2>Where things stand</h2>
+<table border="1" cellpadding="4">
+<tr><th>Milestone</th><th>Status</th><th>Notes</th></tr>
+<tr><td>M0 Accounts and repo</td><td>Done</td><td>Supabase project dt-dashboard-prd, Vercel connected, Anthropic API key. Collaborator access to GitHub / Supabase / Vercel: to confirm.</td></tr>
+<tr><td>M1 Database, colour rules, import</td><td>Done</td><td>Tables, colour rules and access rules live on Supabase. Import script and 78 automated tests.</td></tr>
+<tr><td>Template v2 and driver-sheet skill</td><td>Done (merged 2026-11-05)</td><td>Adds driver type, share of price, binding constraint, kill switch, threshold anchor, event kinds, Thesis rows and the Withheld rule (a withheld metric turns RED). Database change applied to Supabase.</td></tr>
+<tr><td>NVDA driver sheet</td><td>Draft, unreviewed</td><td>6 drivers, 9 signals, 15 readings from SEC filings. All signals GREY until consensus base case rows are added (decision 1).</td></tr>
+<tr><td>M2 Read-only dashboard on Vercel</td><td>Next</td><td>Login page and NVDA ticker page.</td></tr>
+<tr><td>M3 Approval screen</td><td>Not started</td><td></td></tr>
+<tr><td>M4 SEC / FRED data feeds and charts</td><td>Not started</td><td></td></tr>
+<tr><td>M5 AI analyst agents</td><td>Not started</td><td>Needs the 20-30 case gold set first (Duong).</td></tr>
+<tr><td>M6 Showcase</td><td>Not started</td><td>Add a separate dev database before inviting viewers.</td></tr>
+</table>
+
+<h2>NVDA at a glance (draft sheet, facts only)</h2>
+<table border="1" cellpadding="4">
+<tr><th>Driver</th><th>Type</th><th>Binding signal</th><th>Latest reading</th></tr>
+<tr><td>D1 Hyperscaler capex</td><td>Core</td><td>Big-4 capex per quarter</td><td>$201.9B in Q3 CY26 (+108% YoY)</td></tr>
+<tr><td>D2 Rubin ramp</td><td>Mechanism</td><td>Rubin share of Data Center revenue</td><td>Not disclosed yet; first chance is the Nov 17 call</td></tr>
+<tr><td>D3 Non-hyperscale demand</td><td>Option</td><td>AI Clouds, Industrial &amp; Enterprise revenue</td><td>$40.3B in Q2 FY27 (+25% QoQ)</td></tr>
+<tr><td>D4 Gross margin</td><td>Core</td><td>GAAP gross margin</td><td>75.0% in Q2 FY27; Q3 guide 74.0% ±0.5 pt</td></tr>
+<tr><td>D5 China (base case zero)</td><td>Option</td><td>Export licence milestones</td><td>Outlook assumes no China data center compute revenue</td></tr>
+<tr><td>D6 Balance sheet quality</td><td>Core</td><td>Inventory</td><td>$31.6B; DSO 60 days; supply commitments $279B</td></tr>
+</table>
+<p>No ratings, price targets or buy/sell views: the app only reports whether signals are ahead of or behind a base case.</p>
+
+<h2>Decisions waiting for you</h2>
+<p>Full list with suggestions: research/OPEN_DECISIONS.md in the repo.</p>
+<ol>
+<li><b>Where consensus comes from.</b> Suggestion: type in the consensus quoted in news coverage each quarter; show colours but not the raw number in the app.</li>
+<li><b>Signals with no consensus</b> (TSMC monthly, inventory, DSO, supply commitments, capex). Suggestion: allow an owner-approved "our estimate" row to be scored, labelled as such.</li>
+<li><b>Gross margin tolerance.</b> Suggestion: 0.7% instead of 2%, so yellow = inside NVIDIA's guided band.</li>
+<li><b>Share of price per driver.</b> Suggestion: a thesis discussion session with Duong after the Nov 17 results.</li>
+</ol>
+
+<h2>Coming up</h2>
+<table border="1" cellpadding="4">
+<tr><th>Date</th><th>What</th><th>Action</th></tr>
+<tr><td>~2026-11-10</td><td>TSMC October revenue</td><td>Add the reading to signal S2</td></tr>
+<tr><td>2026-11-17</td><td>NVIDIA Q3 FY27 results (2 p.m. PT)</td><td>Refresh the NVDA sheet; score the gross margin test; check the Rubin disclosure (RED if withheld); add base case v2</td></tr>
+</table>
+
+<h2>Your to-dos</h2>
+<ul>
+<li>Confirm Duong has access to GitHub, Supabase and Vercel.</li>
+<li>Review the NVDA draft sheet (inputs/NVDA_driver_sheet.xlsx) before it is imported.</li>
+<li>Decisions 1-4 above, whenever convenient.</li>
+</ul>
+
+<h2>Links</h2>
+<ul>
+<li>Code: https://github.com/tp85-rice/dt-stock-tracking</li>
+<li>Pull request #1 (merged): https://github.com/tp85-rice/dt-stock-tracking/pull/1</li>
+<li>Game plan (Claude doc): https://claude.ai/artifact/U9v7CjHS84jbmK59kZk7wa</li>
+<li>Supabase project: https://loyiamqdycxljgcrmfbh.supabase.co</li>
+</ul>
+
+<h2>Change log</h2>
+<ul>
+<li>2026-11-05 (v-1): Pull request #1 merged; template v2 live on Supabase. Status doc now published as numbered versions.</li>
+<li>2026-11-05 (v-0): Doc created. NVDA sheet refreshed from SEC filings. Template v2 and the driver-sheet skill sent for merge.</li>
+<li>2026-11-04: Thesis research bundle added; House Rules approved; template v2 designed.</li>
+<li>2026-11-03: Plan agreed; Supabase, Vercel and GitHub set up; M1 built.</li>
+</ul>
+</body></html>
