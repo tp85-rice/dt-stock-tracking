@@ -24,6 +24,6 @@ Things the owners (Thao, Duong) need to come back to. Each has Claude's suggesti
 
 ## Project
 
-- [ ] **Merge `claude/loving-mayer-ca62fp` into `main`** (opens the template v2 database change on Supabase). Claude can open the pull request on request.
+- [x] ~~Merge into `main`~~ Done 2026-11-05 (pull request #1); template v2 live on Supabase.
 - [ ] Re-export the game plan Google Doc (the Claude doc has newer changes).
-- [ ] Turn on the Google Docs connector so Claude can update "dt-dashboard — Project Status" in place (see CLAUDE.md).
+- [x] ~~Google Docs connector~~ Not allowed by the organization; the status doc is published as numbered versions (v-0, v-1, ...) instead. Delete old versions by hand.
