@@ -192,4 +192,4 @@ button.primary {
 /* Stacked sign-in form: full-width fields, button below */
 form.stack { display: flex; flex-direction: column; gap: 10px; }
 form.stack > * + * { margin-top: 0; }
-form.stack button { align-self: flex-start; }
+form.stack > button { align-self: flex-start; }

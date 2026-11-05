@@ -30,7 +30,16 @@ The tables are created by the `migrate database` workflow, which runs automatica
 
 Access rules let in only people listed in the `members` table.
 
-1. Supabase > **Authentication > Users > Add user > Send invitation**, using your own email. Accept the invite from your inbox.
+1. Supabase > **Authentication > Users > Add user > Create new user**: your email, a strong password, and tick
+   **Auto Confirm User**. (Do not use "Send invitation": invited users have no password until they accept, and
+   Supabase's built-in mailer is unreliable without SMTP.)
+   - Already created the user without a password, or forgot it? Set one in **SQL Editor** (1 row should be affected):
+     ```sql
+     update auth.users
+     set encrypted_password = extensions.crypt('YOUR-NEW-PASSWORD', extensions.gen_salt('bf')),
+         email_confirmed_at = coalesce(email_confirmed_at, now())
+     where email = 'tp85@rice.edu';
+     ```
 2. Supabase > **SQL Editor**, run (with your email):
    ```sql
    insert into public.members (user_id, email, role)
@@ -38,7 +47,7 @@ Access rules let in only people listed in the `members` table.
    ```
 3. Repeat for the collaborator with role `'reviewer'` (or `'owner'` if they should edit drivers too).
 
-Later, invited viewers get role `'viewer'`. From M2 this is done in the app.
+Later, invited viewers get role `'viewer'` the same way.
 
 ## 4. Import a driver sheet (owner or collaborator)
 
@@ -104,8 +113,7 @@ The web app lives in `web/`. Vercel needs four settings; Supabase needs to know 
 6. **Sign-in method.** The site signs people in with **email + password**; no email is sent, so no SMTP is needed.
    - An owner creates each account in Supabase: **Authentication > Users > Add user > Create new user**, with a
      password and **Auto Confirm User** ticked. Send the password to the person privately.
-   - To change a password: **Authentication > Users >** the user **> Reset password** (needs SMTP), or delete and
-     re-create the user, then re-add them to `members`.
+   - To set or change a password without email: the SQL in section 3, step 1.
    - Optional, later (before inviting viewers): set up SMTP so the "Email me a sign-in code" option works.
      Supabase's built-in sender cannot use custom templates. **Project Settings > Authentication > SMTP Settings**:
      e.g. a Gmail account with 2-step verification and an App Password (host `smtp.gmail.com`, port `465`, user =

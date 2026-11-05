@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import type { TickerPage, Ticker } from "./types";
+import type { TickerPage, Ticker, QueueItem, SignalOption } from "./types";
 
 import { usingFixtures } from "./mode";
 
@@ -91,4 +91,55 @@ export async function getTickerPage(symbol: string): Promise<TickerPage | null> 
     events: events.data ?? [],
     sources: sources.data ?? [],
   };
+}
+
+// ---------------------------------------------------------------- review queue (M3)
+
+
+export function canReview(v: Viewer): boolean {
+  return v.role === "owner" || v.role === "reviewer";
+}
+
+export async function listQueue(status: "pending" | "decided", ticker?: string): Promise<QueueItem[]> {
+  if (usingFixtures()) {
+    try {
+      const all = JSON.parse(readFileSync(join(FIXTURES, "review", "queue.json"), "utf8")) as QueueItem[];
+      return all.filter((q) => (status === "pending" ? q.status === "pending" : q.status !== "pending"))
+        .filter((q) => !ticker || q.ticker === ticker);
+    } catch {
+      return [];
+    }
+  }
+  const { createClient } = await import("./supabase/server");
+  const supabase = await createClient();
+  let q = supabase.from("v_proposal_queue").select("*");
+  q = status === "pending" ? q.eq("status", "pending") : q.neq("status", "pending");
+  if (ticker) q = q.eq("ticker", ticker);
+  q = status === "pending" ? q.order("created_at", { ascending: false }) : q.order("reviewed_at", { ascending: false }).limit(30);
+  const { data, error } = await q;
+  if (error) throw new Error(`Could not load the review queue: ${error.message}`);
+  return (data ?? []) as QueueItem[];
+}
+
+export async function countPending(): Promise<number> {
+  if (usingFixtures()) return (await listQueue("pending")).length;
+  const { createClient } = await import("./supabase/server");
+  const supabase = await createClient();
+  const { count } = await supabase.from("proposals").select("id", { count: "exact", head: true }).eq("status", "pending");
+  return count ?? 0;
+}
+
+export async function listSignalOptions(): Promise<SignalOption[]> {
+  if (usingFixtures()) {
+    return readdirSync(FIXTURES).filter((f) => f.endsWith(".json")).flatMap((f) => {
+      const page = fixture(f.replace(/\.json$/, ""))!;
+      return page.signals.map((s) => ({ ticker: page.ticker.symbol, code: s.signal_code, name: s.signal_name, unit: s.unit }));
+    });
+  }
+  const { createClient } = await import("./supabase/server");
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("signals").select("ticker, code, name, unit").eq("active", true)
+    .neq("polarity", "Event ladder").order("ticker").order("code");
+  if (error) throw new Error(`Could not load signals: ${error.message}`);
+  return data ?? [];
 }

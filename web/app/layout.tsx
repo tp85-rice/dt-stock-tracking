@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css";
-import { getViewer } from "@/lib/data";
+import { getViewer, canReview, countPending } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Driver Tracker",
@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const viewer = await getViewer();
+  const pending = viewer.isMember && canReview(viewer) ? await countPending().catch(() => 0) : null;
   return (
     <html lang="en">
       <body>
@@ -19,6 +20,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Link href="/" className="brand">Driver Tracker</Link>
             {viewer.email && (
               <div className="who">
+                {pending !== null && <Link href="/review">Review{pending ? ` (${pending})` : ""}</Link>}
                 <span className="hide-sm">{viewer.email}</span>
                 <form action="/auth/signout" method="post">
                   <button className="linkbtn" type="submit">Sign out</button>
