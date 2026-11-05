@@ -101,10 +101,19 @@ The web app lives in `web/`. Vercel needs four settings; Supabase needs to know 
      `https://*-<your-vercel-team>.vercel.app/auth/callback`.
 5. **Authentication > Sign In / Providers > Email**: Email enabled. Turn **off** "Allow new users to sign up"
    (invite only; the login form never creates accounts either).
-6. Make sure you and Duong are in `members` (section 3). Only members see any data.
+6. **Authentication > Emails > Magic Link** template (so sign-in survives university mail scanners and works in any
+   browser). Replace the message body with:
+   ```html
+   <h2>Sign in to Driver Tracker</h2>
+   <p>Your sign-in code: <strong>{{ .Token }}</strong></p>
+   <p>Type it on the sign-in page, or <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email">open this link</a> and press Continue.</p>
+   ```
+   Mail scanners (e.g. Microsoft Safe Links) open every link in an email, which used up the old one-time link before
+   you could. They cannot type the code or press Continue.
+7. Make sure you and Duong are in `members` (section 3). Only members see any data.
 
-**Check it:** open the production address, enter your email, click the link in the email (same browser), and you
-should see the ticker list. A ticker only appears after its sheet is imported (section 4).
+**Check it:** open the production address, enter your email, then type the code from the email (or open its link
+and press Continue). You should see the ticker list. A ticker only appears after its sheet is imported (section 4).
 
 Notes:
 - Supabase's built-in email sender allows only a few emails per hour. Fine for a few invited people; add your own
