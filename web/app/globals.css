@@ -150,7 +150,7 @@ details summary { cursor: pointer; font-weight: 600; }
 .ticker-link { display: block; text-decoration: none; color: inherit; }
 .ticker-link:hover { text-decoration: none; border-color: var(--series-1); }
 .search { display: flex; gap: 8px; margin: 16px 0 24px; }
-input[type="text"], input[type="email"] {
+input[type="text"], input[type="email"], input[type="password"] {
   font: inherit; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--axis);
   background: var(--surface-1); color: var(--text-primary); min-width: 0; flex: 1;
 }
@@ -188,3 +188,8 @@ button.primary {
   .ladder li { grid-template-columns: 1fr auto; }
   .ladder .when { grid-column: 1 / -1; }
 }
+
+/* Stacked sign-in form: full-width fields, button below */
+form.stack { display: flex; flex-direction: column; gap: 10px; }
+form.stack > * + * { margin-top: 0; }
+form.stack button { align-self: flex-start; }
