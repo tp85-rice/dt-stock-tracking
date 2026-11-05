@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_PATHS = ["/login", "/auth/callback", "/auth/confirm"];
+const PUBLIC_PATHS = ["/login", "/auth/callback", "/auth/confirm", "/auth/status"];
 
 /** Refreshes the login session on every request and sends logged-out visitors to /login. */
 export async function updateSession(request: NextRequest) {
