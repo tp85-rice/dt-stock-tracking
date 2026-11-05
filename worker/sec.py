@@ -15,6 +15,7 @@ import json
 import os
 import re
 import time
+import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
 
@@ -24,15 +25,47 @@ _MIN_INTERVAL = 0.2  # seconds between requests: well under SEC's 10 per second
 _last_request = 0.0
 
 
-def fetch(url: str, timeout: int = 60) -> str:
+_cache: dict[str, str] = {}
+RETRIES = 3            # extra attempts after the first
+BACKOFF = 5.0          # seconds; doubles each retry (5, 10, 20)
+
+
+def _get(url: str, timeout: int) -> str:
     global _last_request
     wait = _MIN_INTERVAL - (time.monotonic() - _last_request)
     if wait > 0:
         time.sleep(wait)
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept-Encoding": "identity"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return resp.read().decode("utf-8", errors="replace")
+    finally:
         _last_request = time.monotonic()
-        return resp.read().decode("utf-8", errors="replace")
+
+
+def _retryable(exc: Exception) -> bool:
+    if isinstance(exc, urllib.error.HTTPError):
+        return exc.code in (429, 500, 502, 503, 504)
+    return isinstance(exc, (TimeoutError, urllib.error.URLError, ConnectionError, OSError))
+
+
+def fetch(url: str, timeout: int = 90) -> str:
+    """GET with SEC's rate limit, retries on timeouts and server errors, and a per-run cache.
+    Several signals often read the same filing: it is downloaded once per run."""
+    if url in _cache:
+        return _cache[url]
+    for attempt in range(RETRIES + 1):
+        try:
+            text = _get(url, timeout)
+            break
+        except Exception as exc:  # noqa: BLE001 - classified below
+            if attempt == RETRIES or not _retryable(exc):
+                raise
+            time.sleep(BACKOFF * 2 ** attempt)
+    # Filing lists change during the day; documents in Archives never do.
+    if "/Archives/" in url:
+        _cache[url] = text
+    return text
 
 
 @dataclass

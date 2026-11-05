@@ -132,3 +132,31 @@ def test_unknown_signal_in_feeds_file_is_noted(db, tmp_path):
     (feeds / "NVDA" / "feeds.json").write_text(json.dumps({"signals": {"S99": {"adapter": "fake"}}}))
     s = run(db, adapters={}, feed_root=feeds)
     assert any("S99 is not in the database" in n for n in s["notes"])
+
+
+def test_fetch_retries_timeouts_and_caches(monkeypatch):
+    calls = []
+
+    def flaky(url, timeout):
+        calls.append(url)
+        if len(calls) < 3:
+            raise TimeoutError("The read operation timed out")
+        return "ok"
+    monkeypatch.setattr(sec, "_get", flaky)
+    monkeypatch.setattr(sec, "BACKOFF", 0)
+    monkeypatch.setattr(sec, "_cache", {})
+    url = "https://www.sec.gov/Archives/edgar/data/1/x.htm"
+    assert sec.fetch(url) == "ok" and len(calls) == 3      # two timeouts, then success
+    assert sec.fetch(url) == "ok" and len(calls) == 3      # second read comes from the cache
+
+
+def test_fetch_gives_up_after_retries(monkeypatch):
+    import pytest
+
+    def down(url, timeout):
+        raise TimeoutError("down")
+    monkeypatch.setattr(sec, "_get", down)
+    monkeypatch.setattr(sec, "BACKOFF", 0)
+    monkeypatch.setattr(sec, "_cache", {})
+    with pytest.raises(TimeoutError):
+        sec.fetch("https://www.sec.gov/cgi-bin/browse-edgar?x")
