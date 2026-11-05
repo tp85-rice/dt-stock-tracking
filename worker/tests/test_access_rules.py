@@ -76,7 +76,12 @@ def test_reviewer_sees_test_tickers_and_can_propose(seeded):
     as_user(seeded, REVIEWER)
     assert visible(seeded, "signals") == ["NVDA", "TEST"]
     seeded.execute("insert into proposals (kind, ticker, signal_code, payload, origin) "
-                   "values ('observation', 'NVDA', 'S1', '{}', 'manual')")
+                   "values ('observation', 'NVDA', 'S1', %s, 'manual')",
+                   ('{"observed_on": "2026-11-01", "value": 1, "period": "Q1", "base_case_version": "v1"}',))
+    with pytest.raises(Exception, match="row-level security"):
+        with seeded.transaction():  # malformed payload is refused
+            seeded.execute("insert into proposals (kind, ticker, signal_code, payload, origin) "
+                           "values ('observation', 'NVDA', 'S1', '{}', 'manual')")
     with pytest.raises(Exception, match="row-level security"):
         with seeded.transaction():
             seeded.execute("insert into proposals (kind, ticker, payload, origin) "

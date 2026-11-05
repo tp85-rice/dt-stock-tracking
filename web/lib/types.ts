@@ -92,3 +92,47 @@ export interface TickerPage {
   events: EventStep[];
   sources: Source[];
 }
+
+export interface QueueItem {
+  proposal_id: number;
+  kind: string;
+  status: string;
+  ticker: string;
+  signal_code: string | null;
+  signal_name: string | null;
+  driver_name: string | null;
+  unit: string | null;
+  polarity: string | null;
+  origin: string;
+  confidence: number | null;
+  model: string | null;
+  prompt_version: string | null;
+  citations: { url?: string; quote?: string; title?: string }[] | null;
+  check_result: Record<string, unknown> | null;
+  created_at: string;
+  reviewer_note: string | null;
+  reviewed_at: string | null;
+  observed_on: string | null;
+  value: number | null;
+  period: string | null;
+  base_case_version: string | null;
+  arrow: string | null;
+  source_code: string | null;
+  notes: string | null;
+  withheld: boolean;
+  base_value: number | null;
+  preview_variance: number | null;
+  preview_status: string;
+  preview_colour: Colour;
+  current_value: number | null;
+  current_observed_on: string | null;
+  current_colour: Colour | null;
+  current_status: string | null;
+}
+
+export interface SignalOption {
+  ticker: string;
+  code: string;
+  name: string;
+  unit: string | null;
+}
