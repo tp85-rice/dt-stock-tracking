@@ -23,6 +23,7 @@ The parts never call each other; they only share database tables. Colours are ca
 | `supabase/migrations/` | Database structure, colour rules (`v_scores`, `v_event_ladder`, `v_driver_status`, `v_signal_latest`) and access rules. Applied automatically when merged to `main` |
 | `worker/driver_sheet.py` | Reads and checks a filled driver spreadsheet (no database needed) |
 | `worker/import_xlsx.py` | Imports a checked spreadsheet into the database |
+| `worker/run_feeds.py`, `worker/adapters/`, `worker/sec.py` | Daily feeds: read SEC filings and TSMC monthly reports, add new readings to the review queue. Which feed serves which signal: `research/<TICKER>/feeds.json` |
 | `worker/sheet_writer.py` | Turns a JSON spec (e.g. `research/NVDA/driver_spec.json`) into a filled driver sheet and checks it |
 | `.claude/skills/driver-sheet-builder/` | The skill agents use to research and draft a ticker's driver sheet (the driver-definition step) |
 | `research/` | Private research: `House_Rules.md` (approved cross-ticker rules), and per ticker the spec, research notes and thesis state |
@@ -31,7 +32,7 @@ The parts never call each other; they only share database tables. Colours are ca
 | `templates/` | `stock_driver_template.xlsx` (template v2: driver type, share of price, dependencies, binding constraint, kill switch, threshold anchor, event kind, withheld), `llm_eval_scorecard.xlsx`, and `build_templates.py` that regenerates them |
 | `inputs/` | Filled driver sheets, one per ticker |
 | `docs/` | Setup guide and background research |
-| `.github/workflows/` | `tests` (every pull request), `migrate database` (on merge), `weekly database backup` |
+| `.github/workflows/` | `tests` (every pull request), `migrate database` (on merge), `daily feeds` (22:23 UTC), `weekly database backup` |
 | `web/` | The Next.js app (arrives in M2) |
 
 ## Common tasks
@@ -58,6 +59,12 @@ Try a sheet as a hidden test ticker first:
 
 ```bash
 python -m worker.import_xlsx inputs/NVDA_driver_sheet.xlsx --ticker TEST --test
+```
+
+See what the feeds would propose right now (needs `DATABASE_URL`; writes nothing):
+
+```bash
+python -m worker.run_feeds --dry-run
 ```
 
 Run the tests (needs a local Postgres, never the Supabase project; LibreOffice for the golden test):
