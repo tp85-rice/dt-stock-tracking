@@ -116,10 +116,11 @@ def import_sheet(conn: psycopg.Connection, sheet: DriverSheet, is_test: bool = F
             cur.execute(
                 """insert into public.observations
                      (ticker, signal_code, observed_on, value, base_case_version, period, arrow,
-                      source_code, notes, origin)
-                   values (%s, %s, %s, %s, %s, %s, %s, %s, %s, 'import')""",
+                      source_code, notes, withheld, origin)
+                   values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'import')""",
                 (t, rec["signal_code"], rec["observed_on"], rec["value"], rec["base_case_version"],
-                 rec["period"], rec["arrow"], rec["source_code"], rec["notes"]))
+                 rec["period"], rec["arrow"], rec["source_code"], rec["notes"],
+                 rec["withheld"] and rec["value"] is None))
 
         for table, column, items in (
             ("drivers", "code", sheet.drivers),
@@ -142,7 +143,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--quiet", action="store_true", help="hide warnings")
     args = ap.parse_args(argv)
 
-    sheet = parse(args.path, ticker_override=args.ticker)
+    # A trial import may load any sheet under a test ticker (e.g. --ticker TEST --test).
+    sheet = parse(args.path, ticker_override=args.ticker, allow_rename=args.test)
     for issue in sheet.errors + ([] if args.quiet else sheet.warnings):
         print(issue)
     print(sheet.summary())

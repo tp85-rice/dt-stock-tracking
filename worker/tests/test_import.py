@@ -92,3 +92,24 @@ def test_cli_dry_run(tmp_path, capsys):
     assert "Dry run: the sheet is valid" in capsys.readouterr().out
     bad = build(tmp_path / "bad.xlsx", ticker=None)
     assert main([str(bad), "--dry-run"]) == 1
+
+
+def test_import_template_v2_fields(db, tmp_path):
+    _import(db, tmp_path,
+            Drivers=[{"code": "D1", "name": "a", "type": "Core", "share": 0.4}],
+            Signals=[{"code": "S1", "driver": "D1", "name": "x", "tier": "A", "polarity": "Higher is better",
+                      "tolerance": 0.1, "star": "Y", "kill_switch": "Y", "anchor": "guide"}],
+            Base_case=[{"version": "v1", "case_type": "Consensus", "signal": "S1", "period": "Q3 FY26", "value": 100},
+                       {"version": "v1", "case_type": "Thesis", "signal": "S1", "period": "Q3 FY26", "value": 110}],
+            Scoring_log=[{"date": dt.date(2026, 11, 1), "signal": "S1", "version": "v1", "period": "Q3 FY26",
+                          "withheld": "Y"}])
+    assert db.execute("select driver_type, share_of_price::float from drivers").fetchone() == ("Core", 0.4)
+    assert db.execute("select binding_constraint, kill_switch, threshold_anchor from signals").fetchone() == (
+        True, True, "guide")
+    assert db.execute("select colour, data_status from v_scores").fetchone() == ("RED", "Withheld")
+
+
+def test_cli_trial_import_under_test_ticker(tmp_path, capsys):
+    path = build(tmp_path / "x.xlsx", ticker="NVDA", **minimal())
+    assert main([str(path), "--ticker", "TEST", "--dry-run"]) == 1          # real rename: refused
+    assert main([str(path), "--ticker", "TEST", "--test", "--dry-run"]) == 0  # trial import: allowed

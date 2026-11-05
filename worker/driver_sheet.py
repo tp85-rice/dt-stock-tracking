@@ -26,12 +26,15 @@ CONFIDENCE = ["High", "Medium", "Low"]
 TIER = ["A", "B", "C"]
 CADENCE = ["Daily", "Weekly", "Monthly", "Quarterly", "Event"]
 POLARITY = ["Higher is better", "Lower is better", "Event ladder"]
-CASE_TYPE = ["Consensus", "Management"]
+CASE_TYPE = ["Consensus", "Management", "Thesis"]
 EVENT_STATUS = ["Pending", "Occurred", "Slipped", "Failed"]
 ACCESS = ["API", "Download", "Scrape", "Manual", "Vendor"]
 COST = ["Free", "Paid", "Unknown"]
 YES_NO = ["Yes", "No", "Unknown"]
 ARROW = ["Accelerating", "Flat", "Decelerating", "n/a"]
+DRIVER_TYPE = ["Core", "Option", "Mechanism", "Event"]
+EVENT_KIND = ["Milestone", "Catalyst", "Falsification test", "Thesis breaker", "Disclosure"]
+CASE_TYPE_SCORED = "Consensus"
 
 TICKER_RE = re.compile(r"^[A-Z0-9][A-Z0-9.\-]{0,11}$")
 CODE_RE = re.compile(r"^[A-Z0-9_\-]+$")
@@ -120,6 +123,11 @@ class _Row:
         self.error(f"{label} '{value}' is not one of: {', '.join(options)}")
         return None
 
+    def yes(self, col: str, label: str) -> bool:
+        """Y/N cell -> bool. Blank counts as N."""
+        value = self.choice(col, label, ["Y", "N", "Yes", "No"])
+        return value in ("Y", "Yes")
+
     def number(self, col: str, label: str, required: bool = False) -> float | None:
         raw = self.cells.get(col)
         if raw is None or (isinstance(raw, str) and not raw.strip()):
@@ -206,7 +214,8 @@ def _rows(ws, sheet: DriverSheet, cols: str):
 REQUIRED_TABS = ["README", "Drivers", "Signals", "Base case", "Event ladder", "Source log", "Scoring log"]
 
 
-def parse(path: str | Path, ticker_override: str | None = None) -> DriverSheet:
+def parse(path: str | Path, ticker_override: str | None = None, allow_rename: bool = False) -> DriverSheet:
+    """allow_rename: let ticker_override replace a different README ticker (used for --test trial imports)."""
     path = Path(path)
     sheet = DriverSheet(path=path)
     try:
@@ -221,7 +230,7 @@ def parse(path: str | Path, ticker_override: str | None = None) -> DriverSheet:
                                   f"missing tabs {missing}; is this a copy of stock_driver_template.xlsx?"))
         return sheet
 
-    _parse_readme(wb["README"], sheet, ticker_override)
+    _parse_readme(wb["README"], sheet, ticker_override, allow_rename)
     _parse_sources(wb["Source log"], sheet)
     _parse_drivers(wb["Drivers"], sheet)
     _parse_signals(wb["Signals"], sheet)
@@ -232,12 +241,12 @@ def parse(path: str | Path, ticker_override: str | None = None) -> DriverSheet:
     return sheet
 
 
-def _parse_readme(ws, sheet: DriverSheet, override: str | None) -> None:
+def _parse_readme(ws, sheet: DriverSheet, override: str | None, allow_rename: bool = False) -> None:
     ticker = _text(ws["B2"].value)
     ticker = ticker.upper() if ticker else None
     if override:
         override = override.upper()
-        if ticker and ticker != override:
+        if ticker and ticker != override and not allow_rename:
             sheet.issues.append(Issue("error", "README", 2,
                                       f"ticker in sheet is {ticker} but --ticker {override} was given"))
         ticker = override
@@ -282,7 +291,9 @@ def _parse_sources(ws, sheet: DriverSheet) -> None:
 
 def _parse_drivers(ws, sheet: DriverSheet) -> None:
     keyed = []
-    for r in _rows(ws, sheet, "ABCDEFGHI"):  # J-L are formulas; M (notes) read below
+    for r in _rows(ws, sheet, "ABCDEFGHI"):  # J-L are formulas; M-P read below
+        extra = _Row(sheet, ws.title, r.row_no,
+                     {c: ws[f"{c}{r.row_no}"].value for c in "NOP"})
         rec = {
             "code": r.code("A", "Driver ID", required=True),
             "name": r.text("B", "Driver", required=True),
@@ -294,7 +305,15 @@ def _parse_drivers(ws, sheet: DriverSheet) -> None:
             "evidence": r.text("H", "Evidence / citation"),
             "confidence": r.choice("I", "Confidence", CONFIDENCE),
             "notes": _text(ws.cell(row=r.row_no, column=13).value),
+            "driver_type": extra.choice("N", "Driver type", DRIVER_TYPE),
+            "share_of_price": extra.number("O", "Share of price"),
+            "depends_on": None,
         }
+        deps = extra.text("P", "Depends on")
+        if deps:
+            rec["depends_on"] = ", ".join(re.sub(r"\s+", "", d).upper() for d in re.split(r"[,;]", deps) if d.strip())
+        if rec["share_of_price"] is not None and not 0 <= rec["share_of_price"] <= 1:
+            r.error(f"Share of price must be between 0 and 1 (e.g. 0.30 = 30%), got {rec['share_of_price']}")
         sheet.drivers.append(rec | {"_row": r.row_no})
         keyed.append((rec["code"], r.row_no))
     _dupes(sheet, "Drivers", keyed, "Driver ID")
@@ -302,7 +321,7 @@ def _parse_drivers(ws, sheet: DriverSheet) -> None:
 
 def _parse_signals(ws, sheet: DriverSheet) -> None:
     keyed = []
-    for r in _rows(ws, sheet, "ABCDEFGHIJKLM"):
+    for r in _rows(ws, sheet, "ABCDEFGHIJKLMNOP"):
         rec = {
             "code": r.code("A", "Signal ID", required=True),
             "driver_code": r.code("B", "Driver ID", required=True),
@@ -317,6 +336,9 @@ def _parse_signals(ws, sheet: DriverSheet) -> None:
             "reliability": r.integer("K", "Reliability", 1, 5),
             "definition_change": r.text("L", "Definition change"),
             "notes": r.text("M", "Notes"),
+            "binding_constraint": r.yes("N", "Binding constraint"),
+            "kill_switch": r.yes("O", "Kill switch"),
+            "threshold_anchor": r.text("P", "Threshold anchor"),
         }
         if rec["tolerance"] is not None:
             if rec["tolerance"] < 0:
@@ -379,7 +401,10 @@ def _parse_event_ladder(ws, sheet: DriverSheet) -> None:
             "actual_date": r.date("F", "Actual date"),
             "source_code": _text(ws.cell(row=r.row_no, column=9).value),
             "notes": _text(ws.cell(row=r.row_no, column=10).value),
+            "kind": None,
         }
+        rec["kind"] = _Row(sheet, ws.title, r.row_no, {"K": ws.cell(row=r.row_no, column=11).value}
+                           ).choice("K", "Kind", EVENT_KIND)
         if rec["source_code"]:
             rec["source_code"] = re.sub(r"\s+", "", rec["source_code"]).upper()
         if rec["status"] == "Occurred" and not rec["actual_date"]:
@@ -401,11 +426,15 @@ def _parse_scores(ws, sheet: DriverSheet) -> None:
             "source_code": None,
             "notes": _text(ws.cell(row=r.row_no, column=15).value),
         }
-        arrow = _Row(sheet, ws.title, r.row_no, {"M": ws.cell(row=r.row_no, column=13).value,
-                                                   "N": ws.cell(row=r.row_no, column=14).value})
-        rec["arrow"] = arrow.choice("M", "Arrow", ARROW)
-        rec["source_code"] = arrow.code("N", "Source ID")
-        if rec["value"] is None:
+        more = _Row(sheet, ws.title, r.row_no, {"M": ws.cell(row=r.row_no, column=13).value,
+                                                  "N": ws.cell(row=r.row_no, column=14).value,
+                                                  "P": ws.cell(row=r.row_no, column=16).value})
+        rec["arrow"] = more.choice("M", "Arrow", ARROW)
+        rec["source_code"] = more.code("N", "Source ID")
+        rec["withheld"] = more.yes("P", "Withheld?")
+        if rec["withheld"] and rec["value"] is not None:
+            r.warn("marked Withheld but has a value: the value wins and Withheld is ignored")
+        if rec["value"] is None and not rec["withheld"]:
             r.warn("no observed value: this row will show GREY (Missing)")
         if not rec["observed_on"]:
             r.warn("no date observed: staleness cannot be checked")
@@ -432,7 +461,10 @@ def _cross_checks(sheet: DriverSheet) -> None:
         need("Event ladder", e["_row"], "Signal ID", e["signal_code"], signals)
         need("Event ladder", e["_row"], "Source ID", e["source_code"], sources)
         sig = signals.get(e["signal_code"])
-        if sig and sig["polarity"] and sig["polarity"] != "Event ladder":
+        # Disclosure steps, falsification tests, thesis breakers and catalysts may sit on numeric
+        # signals; only plain milestone steps belong to an "Event ladder" signal.
+        if (sig and sig["polarity"] and sig["polarity"] != "Event ladder"
+                and e.get("kind") in (None, "Milestone")):
             sheet.issues.append(Issue("warning", "Event ladder", e["_row"],
                                       f"signal {e['signal_code']} has polarity '{sig['polarity']}', "
                                       "not 'Event ladder'"))
@@ -461,6 +493,14 @@ def _cross_checks(sheet: DriverSheet) -> None:
             sheet.issues.append(Issue("warning", "Drivers", d["_row"],
                                       f"driver {d['code']} has no Tier A or B signal: it will show as "
                                       "narrative-only"))
+        stars = [s["code"] for s in mine if s.get("binding_constraint")]
+        if len(stars) > 1:
+            sheet.issues.append(Issue("warning", "Drivers", d["_row"],
+                                      f"driver {d['code']} has {len(stars)} binding-constraint signals "
+                                      f"({', '.join(stars)}); pick the one that gates it"))
+        for dep in (d.get("depends_on") or "").split(", "):
+            if dep and dep not in drivers:
+                sheet.issues.append(Issue("error", "Drivers", d["_row"], f"Depends on {dep}: not a Driver ID"))
         if len(mine) > MAX_SIGNALS_PER_DRIVER:
             sheet.issues.append(Issue("warning", "Drivers", d["_row"],
                                       f"driver {d['code']} has {len(mine)} signals (cap is "

@@ -76,7 +76,7 @@ def build_ticker_template(path):
     ws = wb.active
     ws.title = "README"
     readme(ws, [
-        ("Per-ticker driver sheet", "", "title"),
+        ("Per-ticker driver sheet (template v2)", "", "title"),
         ("Ticker", "", "input"),
         ("Archetype / template", "", "input"),
         ("Owner / last updated", "", "input"),
@@ -86,10 +86,10 @@ def build_ticker_template(path):
         ("Grey cells", "Formula. Do not overwrite.", ""),
         ("", "", ""),
         ("Order of work", "", "head"),
-        ("1. Drivers", "One row per driver (D1, D2, ...). Give each a unique Driver ID. Target 3-6 drivers.", ""),
-        ("2. Signals", "One row per signal (S1, S2, ...), linked to a Driver ID. Max 5 per driver. At least one must be Tier A or B, otherwise the driver shows 'narrative-only'. Set polarity, tolerance band and max staleness here: these are the scoring rules.", ""),
-        ("3. Base case", "Quantified path per numeric signal and period, with a version label (v1, v2, ...) and snapshot date. Consensus rows are what colours are scored against. Management rows are a reference line only. Never overwrite old versions: add a new version after each earnings call.", ""),
-        ("4. Event ladder", "For milestone signals (launches, approvals, bill passage, contract awards). List the steps in order with a target date each; update status as they happen.", ""),
+        ("1. Drivers", "One row per driver (D1, D2, ...). Give each a unique Driver ID. Target 3-6 drivers. Columns N-P: driver type (Core / Option / Mechanism / Event), rough share of today's price it carries (0-1), and the Driver IDs it depends on (a Mechanism caps the drivers that sit on it).", ""),
+        ("2. Signals", "One row per signal (S1, S2, ...), linked to a Driver ID. Max 5 per driver. At least one must be Tier A or B, otherwise the driver shows 'narrative-only'. Set polarity, tolerance band and max staleness here: these are the scoring rules. Columns N-P: mark the one binding-constraint signal per driver (Y), any kill-switch signal (Y), and the anchor that justifies the base case and tolerance (guidance, a competitor's disclosed figure, the stock's own history).", ""),
+        ("3. Base case", "Quantified path per numeric signal and period, with a version label (v1, v2, ...) and snapshot date. Consensus rows are what colours are scored against. Management and Thesis rows are reference lines only (Thesis = our own base case from the thesis work). Never overwrite old versions: add a new version after each earnings call.", ""),
+        ("4. Event ladder", "For milestone signals (launches, approvals, bill passage, contract awards). List the steps in order with a target date each; update status as they happen. Column K says what kind of step it is: Milestone, Catalyst, Falsification test, Thesis breaker or Disclosure.", ""),
         ("5. Source log", "Every source used: URL, access method, cost, ToS / redistribution note. Give each a Source ID (R1, R2, ...).", ""),
         ("6. Scoring log", "WHERE YOU SCORE. Add one row per observation of a numeric signal: date, Signal ID, observed value, base case version, period. Everything else fills in. You only choose the arrow and add a source ID.", ""),
         ("", "", ""),
@@ -97,7 +97,8 @@ def build_ticker_template(path):
         ("Variance %", "(Observed - Base case) / |Base case|", ""),
         ("Higher is better", "GREEN if variance >= 0. YELLOW if within the tolerance band below base. RED if worse than tolerance.", ""),
         ("Lower is better", "GREEN if variance <= 0. YELLOW if within the tolerance band above base. RED if worse than tolerance.", ""),
-        ("GREY", "Value missing, observation older than the signal's Max staleness (days), or no matching base case row. 'Data status' says which. Grey never means 'in line'.", ""),
+        ("RED (Withheld)", "Value missing AND column P = Y: the company skipped a natural chance to disclose it (an earnings call, a launch). A withheld metric is a signal, so it scores RED. The first time a metric is simply not available, leave P blank: it shows GREY.", ""),
+        ("GREY", "Value missing (not marked withheld), observation older than the signal's Max staleness (days), or no matching base case row. 'Data status' says which. Grey never means 'in line'.", ""),
         ("Arrow", "Your judgement of momentum from the last 2-3 observations: Accelerating / Flat / Decelerating / n/a. It is separate from colour.", ""),
         ("Green means", "Ahead of the base case, not 'the stock goes up'. If consensus is already optimistic, in line is already priced in.", ""),
         ("", "", ""),
@@ -109,26 +110,30 @@ def build_ticker_template(path):
     # Drivers
     d = wb.create_sheet("Drivers")
     make_table(d,
-        ["Driver ID", "Driver", "Thesis (1-2 sentences)", "Valuation mechanism", "Horizon (years)", "Impact", "Direction", "Evidence / citation (Source ID or page)", "Confidence", "# Signals", "# Tier A/B signals", "Driver status", "Notes"],
-        [10, 26, 48, 32, 12, 9, 14, 32, 12, 10, 12, 18, 30], calc_cols=(10, 11, 12))
+        ["Driver ID", "Driver", "Thesis (1-2 sentences)", "Valuation mechanism", "Horizon (years)", "Impact", "Direction", "Evidence / citation (Source ID or page)", "Confidence", "# Signals", "# Tier A/B signals", "Driver status", "Notes", "Driver type", "Share of price (0-1)", "Depends on (Driver IDs)"],
+        [10, 26, 48, 32, 12, 9, 14, 32, 12, 10, 12, 18, 30, 14, 12, 16], calc_cols=(10, 11, 12))
     dropdown(d, "E", ["1", "2", "3", "4", "5"])
     dropdown(d, "F", ["H", "M", "L"])
     dropdown(d, "G", ["Upside", "Downside", "Both"])
     dropdown(d, "I", ["High", "Medium", "Low"])
+    dropdown(d, "N", ["Core", "Option", "Mechanism", "Event"])
     for r in range(2, ROWS + 1):
         d[f"J{r}"] = f'=IF(A{r}="","",COUNTIF(Signals!$B$2:$B${ROWS},A{r}))'
         d[f"K{r}"] = f'=IF(A{r}="","",COUNTIFS(Signals!$B$2:$B${ROWS},A{r},Signals!$E$2:$E${ROWS},"A")+COUNTIFS(Signals!$B$2:$B${ROWS},A{r},Signals!$E$2:$E${ROWS},"B"))'
         d[f"L{r}"] = f'=IF(A{r}="","",IF(J{r}=0,"no signals",IF(K{r}=0,"narrative-only",IF(J{r}>5,"over cap (5)","OK"))))'
+        d[f"O{r}"].number_format = "0%"
 
     # Signals
     s = wb.create_sheet("Signals")
     make_table(s,
-        ["Signal ID", "Driver ID", "Signal", "Source (name / Source ID)", "Tier (A/B/C)", "Cadence", "Unit", "Polarity (for this driver)", "Tolerance band (e.g. 0.10 = 10%)", "Max staleness (days)", "Reliability (1-5)", "Definition change (date / note)", "Notes"],
-        [10, 10, 34, 28, 10, 12, 12, 18, 16, 14, 12, 30, 30])
+        ["Signal ID", "Driver ID", "Signal", "Source (name / Source ID)", "Tier (A/B/C)", "Cadence", "Unit", "Polarity (for this driver)", "Tolerance band (e.g. 0.10 = 10%)", "Max staleness (days)", "Reliability (1-5)", "Definition change (date / note)", "Notes", "Binding constraint (Y/N)", "Kill switch (Y/N)", "Threshold anchor (why this base case / tolerance)"],
+        [10, 10, 34, 28, 10, 12, 12, 18, 16, 14, 12, 30, 30, 12, 11, 40])
     dropdown(s, "E", ["A", "B", "C"])
     dropdown(s, "F", ["Daily", "Weekly", "Monthly", "Quarterly", "Event"])
     dropdown(s, "H", ["Higher is better", "Lower is better", "Event ladder"])
     dropdown(s, "K", ["1", "2", "3", "4", "5"])
+    dropdown(s, "N", ["Y", "N"])
+    dropdown(s, "O", ["Y", "N"])
     for r in range(2, ROWS + 1):
         s[f"I{r}"].number_format = "0%"
 
@@ -137,16 +142,17 @@ def build_ticker_template(path):
     make_table(b,
         ["Version (v1, v2, ...)", "Snapshot date", "Case type", "Signal ID", "Period (e.g. Q4 FY26)", "Value", "Unit", "Source ID", "Basis / notes"],
         [14, 14, 16, 12, 18, 14, 12, 12, 40])
-    dropdown(b, "C", ["Consensus", "Management"])
+    dropdown(b, "C", ["Consensus", "Management", "Thesis"])
     for r in range(2, ROWS + 1):
         b[f"B{r}"].number_format = "yyyy-mm-dd"
 
     # Event ladder
     e = wb.create_sheet("Event ladder")
     make_table(e,
-        ["Signal ID", "Step #", "Milestone", "Base case target date", "Status", "Actual date", "Days late", "Colour", "Source ID", "Notes"],
-        [11, 8, 40, 16, 14, 14, 11, 12, 11, 36], calc_cols=(7, 8))
+        ["Signal ID", "Step #", "Milestone", "Base case target date", "Status", "Actual date", "Days late", "Colour", "Source ID", "Notes", "Kind"],
+        [11, 8, 40, 16, 14, 14, 11, 12, 11, 36, 18], calc_cols=(7, 8))
     dropdown(e, "E", ["Pending", "Occurred", "Slipped", "Failed"])
+    dropdown(e, "K", ["Milestone", "Catalyst", "Falsification test", "Thesis breaker", "Disclosure"])
     for r in range(2, ROWS + 1):
         e[f"D{r}"].number_format = "yyyy-mm-dd"
         e[f"F{r}"].number_format = "yyyy-mm-dd"
@@ -171,9 +177,10 @@ def build_ticker_template(path):
     # Scoring log
     sc = wb.create_sheet("Scoring log")
     make_table(sc,
-        ["Date observed", "Signal ID", "Observed value", "Base case version", "Period", "Base case value", "Variance %", "Polarity", "Tolerance", "Max staleness (days)", "Data status", "Colour", "Arrow (momentum)", "Source ID", "Notes"],
-        [14, 11, 15, 14, 16, 15, 12, 17, 11, 13, 12, 12, 18, 11, 36], calc_cols=(6, 7, 8, 9, 10, 11, 12))
+        ["Date observed", "Signal ID", "Observed value", "Base case version", "Period", "Base case value", "Variance %", "Polarity", "Tolerance", "Max staleness (days)", "Data status", "Colour", "Arrow (momentum)", "Source ID", "Notes", "Withheld? (Y = company skipped a natural chance to disclose)"],
+        [14, 11, 15, 14, 16, 15, 12, 17, 11, 13, 12, 12, 18, 11, 36, 16], calc_cols=(6, 7, 8, 9, 10, 11, 12))
     dropdown(sc, "M", ["Accelerating", "Flat", "Decelerating", "n/a"])
+    dropdown(sc, "P", ["Y", "N"])
     SIG = f"Signals!$A$2:$A${ROWS}"
     for r in range(2, ROWS + 1):
         sc[f"A{r}"].number_format = "yyyy-mm-dd"
@@ -186,12 +193,12 @@ def build_ticker_template(path):
         sc[f"H{r}"] = f'=IF(B{r}="","",IFERROR(INDEX(Signals!$H$2:$H${ROWS},MATCH(B{r},{SIG},0)),""))'
         sc[f"I{r}"] = f'=IF(B{r}="","",IFERROR(IF(INDEX(Signals!$I$2:$I${ROWS},MATCH(B{r},{SIG},0))="","",INDEX(Signals!$I$2:$I${ROWS},MATCH(B{r},{SIG},0))),""))'
         sc[f"J{r}"] = f'=IF(B{r}="","",IFERROR(IF(INDEX(Signals!$J$2:$J${ROWS},MATCH(B{r},{SIG},0))="","",INDEX(Signals!$J$2:$J${ROWS},MATCH(B{r},{SIG},0))),""))'
-        sc[f"K{r}"] = (f'=IF(B{r}="","",IF(NOT(ISNUMBER(C{r})),"Missing",'
+        sc[f"K{r}"] = (f'=IF(B{r}="","",IF(NOT(ISNUMBER(C{r})),IF(UPPER(P{r})="Y","Withheld","Missing"),'
                        f'IF(AND(ISNUMBER(J{r}),ISNUMBER(A{r}),TODAY()-A{r}>J{r}),"Stale",'
                        f'IF(NOT(ISNUMBER(F{r})),"No base case","OK"))))')
-        sc[f"L{r}"] = (f'=IF(B{r}="","",IF(K{r}<>"OK","GREY",IF(NOT(ISNUMBER(G{r})),"GREY",'
+        sc[f"L{r}"] = (f'=IF(B{r}="","",IF(K{r}="Withheld","RED",IF(K{r}<>"OK","GREY",IF(NOT(ISNUMBER(G{r})),"GREY",'
                        f'IF(H{r}="Higher is better",IF(G{r}>=0,"GREEN",IF(G{r}>=-N(I{r}),"YELLOW","RED")),'
-                       f'IF(H{r}="Lower is better",IF(G{r}<=0,"GREEN",IF(G{r}<=N(I{r}),"YELLOW","RED")),"GREY")))))')
+                       f'IF(H{r}="Lower is better",IF(G{r}<=0,"GREEN",IF(G{r}<=N(I{r}),"YELLOW","RED")),"GREY"))))))')
     color_cf(sc, f"L2:L{ROWS}")
     sc.conditional_formatting.add(f"K2:K{ROWS}", FormulaRule(formula=['AND(K2<>"",K2<>"OK")'], fill=GREY))
 
@@ -310,6 +317,9 @@ def build_eval_template(path):
     wb.save(path)
 
 
-build_ticker_template("stock_driver_template.xlsx")
-build_eval_template("llm_eval_scorecard.xlsx")
-print("ok")
+if __name__ == "__main__":
+    import sys
+    build_ticker_template("stock_driver_template.xlsx")
+    if "--driver-only" not in sys.argv:
+        build_eval_template("llm_eval_scorecard.xlsx")
+    print("ok")

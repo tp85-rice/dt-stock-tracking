@@ -58,6 +58,7 @@ BASE = [base(s, "Q1", 100) for s in ("S1", "S2", "S3", "S4", "S5", "S6")] + [
     base("S1", "Q3", 100, case="Management"),
     base("S1", "Q4", -50),
     base("S2", "Q1", 80, version="v2"),
+    base("S3", "Q1", 500, case="Thesis"),                      # reference only, never scored
 ]
 
 
@@ -79,6 +80,8 @@ SCORES = [
     obs("S1", 120, period="Q3"),                               # management only
     obs("S1", -40, period="Q4"), obs("S1", -60, period="Q4"),  # negative base
     obs("S1", 120, period="q1", version="V1"),                 # case-insensitive match
+    dict(obs("S1", None), withheld="Y"),                       # withheld -> RED
+    dict(obs("S1", 120), withheld="Y"),                        # value wins over the flag
 ]
 
 

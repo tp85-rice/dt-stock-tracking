@@ -23,8 +23,12 @@ The parts never call each other; they only share database tables. Colours are ca
 | `supabase/migrations/` | Database structure, colour rules (`v_scores`, `v_event_ladder`, `v_driver_status`, `v_signal_latest`) and access rules. Applied automatically when merged to `main` |
 | `worker/driver_sheet.py` | Reads and checks a filled driver spreadsheet (no database needed) |
 | `worker/import_xlsx.py` | Imports a checked spreadsheet into the database |
+| `worker/sheet_writer.py` | Turns a JSON spec (e.g. `research/NVDA/driver_spec.json`) into a filled driver sheet and checks it |
+| `.claude/skills/driver-sheet-builder/` | The skill agents use to research and draft a ticker's driver sheet (the driver-definition step) |
+| `research/` | Private research: `House_Rules.md` (approved cross-ticker rules), and per ticker the spec, research notes and thesis state |
+| `thesis-research-bundle/` | Source research method (skills and reference). Personal sections are never used by the app or agents |
 | `worker/tests/` | Tests, including the golden test that compares the spreadsheet's own formulas with the database |
-| `templates/` | `stock_driver_template.xlsx`, `llm_eval_scorecard.xlsx`, and `build_templates.py` that regenerates them |
+| `templates/` | `stock_driver_template.xlsx` (template v2: driver type, share of price, dependencies, binding constraint, kill switch, threshold anchor, event kind, withheld), `llm_eval_scorecard.xlsx`, and `build_templates.py` that regenerates them |
 | `inputs/` | Filled driver sheets, one per ticker |
 | `docs/` | Setup guide and background research |
 | `.github/workflows/` | `tests` (every pull request), `migrate database` (on merge), `weekly database backup` |

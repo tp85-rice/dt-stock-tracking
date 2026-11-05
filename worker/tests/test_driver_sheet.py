@@ -108,3 +108,60 @@ def test_wrong_file(tmp_path):
     p = tmp_path / "other.xlsx"
     openpyxl.Workbook().save(p)
     assert any("missing tabs" in m for m in _msgs(parse(p)))
+
+
+def test_template_v2_fields(tmp_path):
+    sheet = parse(build(tmp_path / "x.xlsx", **minimal(
+        Drivers=[{"code": "D1", "name": "a", "type": "Mechanism", "share": 0.3},
+                 {"code": "D2", "name": "b", "type": "option", "depends_on": "d1"}],
+        Signals=[{"code": "S1", "driver": "D1", "name": "x", "tier": "A", "polarity": "Higher is better",
+                  "star": "Y", "kill_switch": "N", "anchor": "Company guidance"},
+                 {"code": "S2", "driver": "D2", "name": "y", "tier": "A", "polarity": "Higher is better"}],
+        Event_ladder=[{"signal": "S1", "step": 1, "milestone": "Discloses Rubin share", "kind": "Disclosure"}],
+        Scoring_log=[{"date": dt.date(2026, 11, 1), "signal": "S1", "version": "v1", "period": "Q3 FY26",
+                      "withheld": "Y"}])))
+    assert sheet.errors == [], sheet.errors
+    assert [d["driver_type"] for d in sheet.drivers] == ["Mechanism", "Option"]
+    assert sheet.drivers[1]["depends_on"] == "D1"
+    assert sheet.signals[0]["binding_constraint"] is True and sheet.signals[1]["binding_constraint"] is False
+    assert sheet.signals[0]["threshold_anchor"] == "Company guidance"
+    assert sheet.event_ladder[0]["kind"] == "Disclosure"
+    assert sheet.scores[0]["withheld"] is True
+
+
+def test_template_v2_errors(tmp_path):
+    sheet = parse(build(tmp_path / "x.xlsx", **minimal(
+        Drivers=[{"code": "D1", "name": "a", "share": 1.5, "depends_on": "D9"}])))
+    errors = " | ".join(_msgs(sheet))
+    assert "Share of price must be between 0 and 1" in errors
+    assert "Depends on D9: not a Driver ID" in errors
+
+
+def test_sheet_writer_cli(tmp_path, capsys):
+    import json
+
+    from worker.sheet_writer import main as write_main
+
+    spec = {"ticker": "NVDA", "owner_note": "Draft", "Drivers": [{"code": "D1", "name": "a", "type": "Core"}],
+            "Signals": [{"code": "S1", "driver": "D1", "name": "x", "tier": "A", "polarity": "Higher is better"}],
+            "Source log": [{"code": "R1", "url": "https://www.sec.gov/", "accessed": "2026-11-04"}],
+            "Scoring log": [{"date": "2026-08-27", "signal": "S1", "value": 1, "version": "v1", "period": "Q2",
+                             "source": "R1"}]}
+    p = tmp_path / "spec.json"
+    p.write_text(json.dumps(spec))
+    assert write_main([str(p), str(tmp_path / "out.xlsx")]) == 0
+    sheet = parse(tmp_path / "out.xlsx")
+    assert sheet.scores[0]["observed_on"] == dt.date(2026, 8, 27)
+    spec["Drivers"][0]["typo"] = 1
+    p.write_text(json.dumps(spec))
+    import pytest
+    with pytest.raises(ValueError, match="unknown fields"):
+        write_main([str(p), str(tmp_path / "out2.xlsx")])
+
+
+def test_disclosure_step_on_numeric_signal_is_fine(tmp_path):
+    sheet = parse(build(tmp_path / "x.xlsx", **minimal(
+        Event_ladder=[{"signal": "S1", "step": 1, "milestone": "Discloses it", "kind": "Disclosure"},
+                      {"signal": "S1", "step": 2, "milestone": "Plain step"}])))
+    warnings = [m for m in _msgs(sheet, "warning") if "not 'Event ladder'" in m]
+    assert len(warnings) == 1 and "row 3" in warnings[0]
