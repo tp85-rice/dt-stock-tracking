@@ -1,7 +1,7 @@
 <html><head><meta charset="utf-8"></head><body>
 <h1>dt-dashboard: Project Status</h1>
 <!-- Source of truth: docs/STATUS.html in the repo. Each update is uploaded as a new Google Doc "dt-dashboard — Project Status v-N"; older versions can be deleted. -->
-<p><b>Version:</b> v-7 &nbsp;·&nbsp; <b>Last updated:</b> 2026-11-05 by Claude &nbsp;·&nbsp; <b>Owners:</b> Thao (tp85), Duong</p>
+<p><b>Version:</b> v-8 &nbsp;·&nbsp; <b>Last updated:</b> 2026-11-07 by Claude &nbsp;·&nbsp; <b>Owners:</b> Thao (tp85), Duong</p>
 <p>This doc is the one-page status of the stock driver tracker: what is done, what is next, what needs a decision. Claude publishes a new numbered version (v-0, v-1, v-2, ...) at the end of each work session that changes anything; the highest number is current and older versions can be deleted. Comments do not carry over to the next version, so put lasting notes in the repo or tell Claude. The detailed plan lives in the game plan doc; the code lives in GitHub.</p>
 
 <h2>Where things stand</h2>
@@ -10,12 +10,13 @@
 <tr><td>M0 Accounts and repo</td><td>Done</td><td>Supabase project dt-dashboard-prd, Vercel connected, Anthropic API key. Collaborator access to GitHub / Supabase / Vercel: to confirm.</td></tr>
 <tr><td>M1 Database, colour rules, import</td><td>Done</td><td>Tables, colour rules and access rules live on Supabase. Import script and 78 automated tests.</td></tr>
 <tr><td>Template v2 and driver-sheet skill</td><td>Done (merged 2026-11-05)</td><td>Adds driver type, share of price, binding constraint, kill switch, threshold anchor, event kinds, Thesis rows and the Withheld rule (a withheld metric turns RED). Database change applied to Supabase.</td></tr>
-<tr><td>NVDA driver sheet</td><td>Reviewed and imported (2026-11-05)</td><td>6 drivers, 9 signals, 15 readings from SEC filings. All signals GREY until consensus base case rows are added (decision 1).</td></tr>
+<tr><td>NVDA driver sheet</td><td>Reviewed and imported (2026-11-05)</td><td>6 drivers, 9 signals, 15 readings from SEC filings. All signals GREY until base case rows are added: consensus from news after the Nov 17 results (decision 1), our own estimates for signals with no consensus (decision 2). Gross margin tolerance tightened to 0.7% (decision 3).</td></tr>
 <tr><td>M2 Read-only dashboard on Vercel</td><td>Done: live, owner signed in (2026-11-05)</td><td>Invite-only email login, ticker list, NVDA page with driver cards, signal status, history, milestones and sources. Checked on desktop, dark mode and phone using sample data. Fixes after launch: Vercel framework setting, clear 'site not configured' page, and sign-in by email + password (no email needed). Emailed codes work once SMTP is set up (optional, later).</td></tr>
 <tr><td>M3 Approval screen</td><td>Done (merged 2026-11-05)</td><td>Review page: each proposed reading with its source quote, base case, the colour it would get and what is shown now; Approve, Edit then approve, Reject (reason required); add a reading by hand. Decisions are recorded with name and time. 86 automated tests.</td></tr>
 <tr><td>M4a Data feeds</td><td>Live (merged 2026-11-05)</td><td>Daily job (22:23 UTC) reads SEC filings and TSMC monthly reports and adds new readings to the review queue: NVDA S1 Big-4 capex, S2 TSMC monthly growth, S4 AI Clouds/Industrial/Enterprise revenue, S5 gross margin, S7 inventory, S8 days sales outstanding. S3, S6 and S9 stay manual. Checked live against SEC: every figure matches the hand-verified sheet. First run against Supabase skipped 6 of 7 readings as already recorded; one SEC timeout fixed by retries and per-run reuse of filings (#10). 96 automated tests.</td></tr>
-<tr><td>M4b Financial charts</td><td>Next</td><td>Segment revenue, margins and valuation history on the ticker page.</td></tr>
-<tr><td>M5 AI analyst agents</td><td>Not started</td><td>Needs the 20-30 case gold set first (Duong).</td></tr>
+<tr><td>M4b Financial charts</td><td>Done (merged 2026-11-05, #12)</td><td>Quarterly revenue (Data Center and the rest), gross and operating margins, and revenue by market platform, from SEC filings; 44 rows loaded, refreshed by the daily job. Valuation history (P/E, EV/Sales) waits on a share-price source (decision 6).</td></tr>
+<tr><td>Colour rule changes (decisions 1-3)</td><td>Built 2026-11-07</td><td>A signal with no consensus is compared with our own estimate (Thesis row) and labelled "vs our estimate"; consensus always wins when both exist. NVDA gross margin tolerance 2% to 0.7%. Consensus comes from news coverage of the results; the app never shows the consensus number. Same rule in the database and the spreadsheet, checked by the golden test.</td></tr>
+<tr><td>M5 AI analyst agents</td><td>Plumbing built (2026-11-07); AI not started</td><td>Built: scoring of agent answers against the gold set (writes the scorecard's Runs tab), a dry run and a route into the review queue with the quote check in code, and a daily cost cap ($1.00 by default). See docs/AGENTS.md. The AI itself still needs the 20-30 case gold set first (Duong); the scorecard is being hand-checked. 114 automated tests.</td></tr>
 <tr><td>M6 Showcase</td><td>Not started</td><td>Add a separate dev database before inviting viewers.</td></tr>
 </table>
 
@@ -33,18 +34,17 @@
 
 <h2>Decisions waiting for you</h2>
 <p>Full list with suggestions: research/OPEN_DECISIONS.md in the repo.</p>
+<p>Decided 2026-11-07: 1 (consensus from news coverage), 2 (our estimate when there is no consensus), 3 (gross margin tolerance 0.7%). These may change as we use them; the decisions file says where each lives and how to reverse it.</p>
 <ol>
-<li><b>Where consensus comes from.</b> Suggestion: type in the consensus quoted in news coverage each quarter; show colours but not the raw number in the app.</li>
-<li><b>Signals with no consensus</b> (TSMC monthly, inventory, DSO, supply commitments, capex). Suggestion: allow an owner-approved "our estimate" row to be scored, labelled as such.</li>
-<li><b>Gross margin tolerance.</b> Suggestion: 0.7% instead of 2%, so yellow = inside NVIDIA's guided band.</li>
-<li><b>Share of price per driver.</b> Suggestion: a thesis discussion session with Duong after the Nov 17 results.</li>
+<li value="5"><b>Share of price per driver.</b> Suggestion: a thesis discussion session with Duong after the Nov 17 results. It also sets the "our estimate" rows that decision 2 needs.</li>
+<li value="6"><b>Share-price source for valuation charts.</b> No free source clearly allows showing derived ratios on a shared site. Shortlist: Tiingo (ask its sales team for a written OK), Marketstack Basic (about $9.99/month, confirm display rights), Alpha Vantage free (ask first).</li>
 </ol>
 
 <h2>Coming up</h2>
 <table border="1" cellpadding="4">
 <tr><th>Date</th><th>What</th><th>Action</th></tr>
 <tr><td>~2026-11-10</td><td>TSMC October revenue</td><td>The daily feeds propose it for signal S2: approve it on /review</td></tr>
-<tr><td>2026-11-17</td><td>NVIDIA Q3 FY27 results (2 p.m. PT)</td><td>Score the gross margin test; check the Rubin disclosure (RED if withheld); add base case v2. The daily feeds propose S4, S5, S7 and S8 once the 10-Q is filed: approve them on /review.</td></tr>
+<tr><td>2026-11-17</td><td>NVIDIA Q3 FY27 results (2 p.m. PT)</td><td>Score the gross margin test; check the Rubin disclosure (RED if withheld); add base case v2 with the consensus quoted in news coverage (first use of decision 1). The daily feeds propose S4, S5, S7 and S8 once the 10-Q is filed: approve them on /review.</td></tr>
 </table>
 
 <h2>Your to-dos</h2>
@@ -53,12 +53,15 @@
 <li>Try the review page: Review &gt; Add a reading by hand, then approve it.</li>
 <li>Later, before inviting viewers: set up SMTP so emailed sign-in codes work (SETUP section 6, step 6).</li>
 <li>Confirm Duong has access to GitHub, Supabase and Vercel.</li>
-<li>Decisions 1-4 above, whenever convenient.</li>
+<li>Hand-check the LLM scorecard; send the updated file back when ready.</li>
+<li>Decision 6: if Tiingo looks right, email its sales team (or ask Claude to draft the email).</li>
+<li>Decision 5 with Duong after Nov 17.</li>
 </ul>
 
 <h2>Links</h2>
 <ul>
 <li>Code: https://github.com/tp85-rice/dt-stock-tracking</li>
+<li>Pull request #12 (M4b charts, merged): https://github.com/tp85-rice/dt-stock-tracking/pull/12</li>
 <li>Pull requests #9 and #10 (M4a data feeds, merged): https://github.com/tp85-rice/dt-stock-tracking/pull/10</li>
 <li>Pull request #8 (M3 review page, merged): https://github.com/tp85-rice/dt-stock-tracking/pull/8</li>
 <li>Pull requests #4 to #7 (launch fixes, merged): https://github.com/tp85-rice/dt-stock-tracking/pull/7</li>
@@ -70,6 +73,7 @@
 
 <h2>Change log</h2>
 <ul>
+<li>2026-11-07 (v-8): Owners decided 1-3 (consensus from news; "our estimate" when there is no consensus; gross margin tolerance 0.7%), open to change. M5 plumbing built: agent scoring against the gold set, review-queue route with the quote check, daily cost cap. Price-source shortlist for decision 6. M4b charts were merged on 2026-11-05 (#12).</li>
 <li>2026-11-05 (v-7): Daily feeds live (#9, #10). Owners' standing instruction: Claude merges pull requests to main once all checks pass.</li>
 <li>2026-11-05 (v-6): M3 merged and live. NVDA sheet reviewed and imported. Duong's account created. M4a data feeds built (pull request #9).</li>
 <li>2026-11-05 (v-5): Sign-in fixed (#7: browser sign-in, /auth/status page; password set with SQL). Owner signed in: M2 done. M3 review page built (pull request #8). SETUP guide: create users with a password, not an invitation.</li>

@@ -80,8 +80,8 @@ function ReviewCard({ q }: { q: QueueItem }) {
       <table className="sources" style={{ marginTop: 10 }}>
         <tbody>
           <tr><td className="muted">Proposed</td><td><strong>{proposed}</strong> for {q.period ?? "?"}, observed {q.observed_on ?? "?"}</td></tr>
-          <tr><td className="muted">Base case</td><td>{q.base_value === null ? `none for ${q.base_case_version ?? "?"} ${q.period ?? ""}` : `${formatValue(q.base_value, q.unit)} (${q.base_case_version})`}</td></tr>
-          <tr><td className="muted">Would show as</td><td><StatusChip colour={q.preview_colour} detail={q.preview_status} /> <span className="small muted">{pct(q.preview_variance)} vs base</span></td></tr>
+          <tr><td className="muted">Base case</td><td>{q.base_value === null ? `none for ${q.base_case_version ?? "?"} ${q.period ?? ""}` : `${formatValue(q.base_value, q.unit)} (${q.base_case_version}${q.base_type === "Thesis" ? ", our estimate: no consensus" : ""})`}</td></tr>
+          <tr><td className="muted">Would show as</td><td><StatusChip colour={q.preview_colour} detail={q.preview_status} /> <span className="small muted">{pct(q.preview_variance)} {q.base_type === "Thesis" ? "vs our estimate" : "vs base"}</span></td></tr>
           <tr><td className="muted">Currently shown</td><td>{q.current_colour ? <><StatusChip colour={q.current_colour} detail={q.current_status} /> {formatValue(q.current_value, q.unit)} <span className="small muted">({q.current_observed_on ?? "no date"})</span></> : "–"}</td></tr>
           {q.source_code && <tr><td className="muted">Source</td><td>{q.source_code}</td></tr>}
           {q.notes && <tr><td className="muted">Notes</td><td className="small">{q.notes}</td></tr>}

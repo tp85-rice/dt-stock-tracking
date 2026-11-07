@@ -100,7 +100,7 @@ def test_scoring_row_without_matching_base_case_warns(tmp_path):
         Scoring_log=[{"date": dt.date(2026, 11, 1), "signal": "S1", "value": 1, "version": "v2",
                       "period": "Q3 FY26"}])))
     assert sheet.errors == []
-    assert any("no Consensus base case for S1 v2" in m for m in _msgs(sheet, "warning"))
+    assert any("no Consensus or Thesis base case for S1 v2" in m for m in _msgs(sheet, "warning"))
 
 
 def test_wrong_file(tmp_path):

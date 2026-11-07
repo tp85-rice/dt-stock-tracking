@@ -23,7 +23,7 @@ This skill combines the parts of `thesis-research-bundle/` that define drivers, 
 
 1. **No advice in the sheet.** No rating, fair value, price target, valuation zone, buy / sell / hold wording, or "should". Thesis-session outputs like these stay in `research/[TICKER]/[TICKER]_Thesis_State.md`, never in the sheet, the database or the app.
 2. **Colours follow the app, not the bundle.** GREEN = at or ahead of the Consensus base case; YELLOW = behind but within the tolerance band; RED = worse than tolerance, or a withheld metric; GREY = missing, stale or no base case. A reading that matches the base case is GREEN.
-3. **Colours are scored against Consensus rows only.** Management (guidance) and Thesis (our own base case) rows are reference lines.
+3. **Colours are scored against the Consensus row; when a signal has no Consensus row for that version and period, against the Thesis row** (our own estimate; the app shows it as "vs our estimate"). Consensus always wins when both exist. Management (guidance) rows are reference lines. (Owner decision 2026-11-07, see `research/OPEN_DECISIONS.md`.)
 4. **No stock-level score.** Colours exist per signal; the app shows driver status (signal counts, narrative-only) but no single thesis colour.
 5. **Never invent a number.** If it is not in a page you opened, leave the cell blank and list it under Gaps. A gap is better than a wrong number.
 6. **Every number is cited** with a Source ID that resolves to a URL in the Source log. Re-source news and AI-summary figures to the filing or press release; if you cannot, the source is Tier C and the reliability note says so.
@@ -57,7 +57,8 @@ For the latest reported quarter and the next one: the 3–5 KPIs that best measu
 ### 4. Base case (Base case tab)
 
 Version `v1` for the first snapshot, snapshot date = today. Never edit an imported row; later snapshots are `v2`, `v3`.
-- **Consensus** rows (scored): analyst consensus per numeric signal and period, with source. Where no consensus exists for a signal, use guidance or our estimate only as a **Thesis** row and say in Notes that the signal will show GREY until a Consensus row exists, or ask the owners whether to treat our estimate as the base case (record their answer in Notes).
+- **Consensus** rows (scored): analyst consensus per numeric signal and period. **Where it comes from (owner decision 2026-11-07):** the consensus quoted in news coverage of the results (e.g. "analysts expected $X, according to LSEG"). Log the article in the Source log with Tier C, Cost Free and **Redistribute on site? = No**; put the publisher and the consensus provider named in the article in Notes. The app shows the colour and the variance, never the consensus number itself (only reviewers see it on /review). If no article quotes a figure for a signal, leave it for the Thesis row.
+- **Thesis** rows (scored only when there is no Consensus row): our own estimate for signals that have no consensus (e.g. TSMC monthly YoY, inventory, DSO, supply commitments, capex). Say in Notes how it was set (guidance, run-rate, thesis discussion). Mark these as a draft for the owners: a Thesis row is approved when the owners import the sheet.
 - **Management** rows: company guidance (midpoint; put the range in Notes).
 - **Thesis** rows: our own base case from the thesis work, anchored as in Step 3.
 - Include the **last reported period** with the pre-report consensus where you can find it, so the dashboard has colours before the next print.
@@ -93,7 +94,7 @@ Target date = the base-case date; leave blank when the base case expects it not 
 | Evidence grade | Signals E (Tier A/B/C) |
 | ⭐ binding constraint / KS kill switch / anchor | Signals N / O / P |
 | Methodology trap, definition change | Signals M / L |
-| 🟡 base-case threshold | Base case value (Consensus scored; Thesis reference) |
+| 🟡 base-case threshold | Base case value (Consensus scored; Thesis scored when no Consensus) |
 | 🔴 threshold | Signals I tolerance = distance from base to red, as a fraction |
 | ⚪ no data (first cycle) | Scoring log row left out, or value blank → GREY |
 | Withheld on a natural occasion → 🔴 | Scoring log P = Y → RED; Event ladder Disclosure step Failed |

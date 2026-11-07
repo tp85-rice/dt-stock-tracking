@@ -46,6 +46,8 @@ export interface SignalLatest {
   arrow: string | null;
   source_code: string | null;
   age_days: number | null;
+  /** What the reading was scored against: Consensus, or Thesis (our own estimate) when there is no consensus. */
+  base_type: "Consensus" | "Thesis" | null;
 }
 
 export interface Observation {
@@ -136,6 +138,7 @@ export interface QueueItem {
   current_observed_on: string | null;
   current_colour: Colour | null;
   current_status: string | null;
+  base_type: "Consensus" | "Thesis" | null;
 }
 
 export interface SignalOption {

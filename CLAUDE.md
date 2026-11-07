@@ -10,7 +10,7 @@ on your own. The organization does not allow the Google Docs connector, so each 
    line `(v-N)` at the top of the Change log. Commit it with the session's other changes.
 2. Find the current highest version: Google Drive search in folder `11RrJZHSRBhU6ha8x1-pLYYnghZyeCPy5`
    (`dt-dashboard`) for titles containing `dt-dashboard — Project Status v-`. Next version = highest N + 1.
-   Versions so far: v-0 to v-7 (2026-11-05).
+   Versions so far: v-0 to v-8 (2026-11-07).
 3. Upload `docs/STATUS.html` with the Google Drive connector `create_file` (contentMimeType `text/html`,
    parentId = that folder) titled `dt-dashboard — Project Status v-<N>`, then read it back to check it converted.
 4. Never delete, trash or rename older versions; the owners delete them by hand. Tell the owners the new version's link.

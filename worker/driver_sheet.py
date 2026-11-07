@@ -35,6 +35,7 @@ ARROW = ["Accelerating", "Flat", "Decelerating", "n/a"]
 DRIVER_TYPE = ["Core", "Option", "Mechanism", "Event"]
 EVENT_KIND = ["Milestone", "Catalyst", "Falsification test", "Thesis breaker", "Disclosure"]
 CASE_TYPE_SCORED = "Consensus"
+SCORED_CASE_TYPES = ("Consensus", "Thesis")  # Thesis only when no Consensus row (decision 2026-11-07)
 
 TICKER_RE = re.compile(r"^[A-Z0-9][A-Z0-9.\-]{0,11}$")
 CODE_RE = re.compile(r"^[A-Z0-9_\-]+$")
@@ -472,16 +473,16 @@ def _cross_checks(sheet: DriverSheet) -> None:
         need("Scoring log", o["_row"], "Signal ID", o["signal_code"], signals)
         need("Scoring log", o["_row"], "Source ID", o["source_code"], sources)
 
-    # Base case rows whose version is used in the scoring log but has no Consensus row.
+    # Scoring log rows with neither a Consensus nor a Thesis base case (Thesis is used when Consensus is missing).
     consensus = {(b["signal_code"], (b["version"] or "").lower(), (b["period"] or "").lower())
-                 for b in sheet.base_case if b["case_type"] == "Consensus"}
+                 for b in sheet.base_case if b["case_type"] in SCORED_CASE_TYPES}
     for o in sheet.scores:
         if o["signal_code"] in signals and o["base_case_version"] and o["period"]:
             key = (o["signal_code"], o["base_case_version"].lower(), o["period"].lower())
             if key not in consensus:
                 sheet.issues.append(Issue(
                     "warning", "Scoring log", o["_row"],
-                    f"no Consensus base case for {o['signal_code']} {o['base_case_version']} "
+                    f"no Consensus or Thesis base case for {o['signal_code']} {o['base_case_version']} "
                     f"{o['period']}: this row will show GREY (No base case)"))
 
     # Driver-level rules (same as the Drivers tab's status column).

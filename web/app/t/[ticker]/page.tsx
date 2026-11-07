@@ -45,6 +45,7 @@ export default async function TickerPageView({ params }: { params: Promise<{ tic
       <p className="explainer">
         Green means a signal is at or ahead of the consensus base case, not that the stock goes up.
         Grey means no reading, stale data or no base case to compare with; it never means "in line".
+        Where there is no consensus for a signal, it is compared with our own estimate instead, marked "vs our estimate".
       </p>
 
       <div className="drivers">
@@ -116,7 +117,10 @@ function DriverCard({ driver, signals, history }: {
                   </td>
                   <td data-label="Status"><StatusChip colour={s.colour} detail={s.data_status} /></td>
                   <td className="num" data-label="Latest">{s.polarity === "Event ladder" ? <span className="small muted">see milestones</span> : fmt(s.observed_value, s.unit)}</td>
-                  <td className="num hide-sm">{pct(s.variance)}</td>
+                  <td className="num hide-sm">
+                    {pct(s.variance)}
+                    {s.base_type === "Thesis" && s.variance !== null && <div className="small muted">vs our estimate</div>}
+                  </td>
                   <td className="hide-sm"><Arrow value={s.arrow} /></td>
                   <td className="hide-sm"><Sparkline points={history(s.signal_code)} unit={s.unit} /></td>
                   <td className="num" data-label="Age">{age(s.age_days)}</td>

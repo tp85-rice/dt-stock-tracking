@@ -161,12 +161,12 @@
       "cadence": "Quarterly",
       "unit": "%",
       "polarity": "Higher is better",
-      "tolerance": 0.02,
+      "tolerance": 0.007,
       "staleness": 100,
       "reliability": 5,
       "star": "Y",
       "kill_switch": "N",
-      "anchor": "Company guidance: Q3 FY27 GAAP and non-GAAP gross margin 74.0% plus or minus 50 bp (R2). Tolerance 2% of a 74% base is about 1.5 points, wider than the guided band; tighten to 0.7% (about 0.5 points) if the owners want the guidance band to be the yellow zone.",
+      "anchor": "Company guidance: Q3 FY27 GAAP and non-GAAP gross margin 74.0% plus or minus 50 bp (R2). Tolerance 0.7% of a 74% base is about 0.5 points, so YELLOW = inside the guided band and RED = below it (owner decision 2026-11-07; was 2%, about 1.5 points).",
       "notes": "Feed: EDGAR GrossProfit / Revenues. GAAP and non-GAAP guidance are identical this quarter (R2). Provisions for inventory and excess purchase obligations cost 0.8 points in Q2 FY27 (R1)."
     },
     {
