@@ -88,7 +88,7 @@ def build_ticker_template(path):
         ("Order of work", "", "head"),
         ("1. Drivers", "One row per driver (D1, D2, ...). Give each a unique Driver ID. Target 3-6 drivers. Columns N-P: driver type (Core / Option / Mechanism / Event), rough share of today's price it carries (0-1), and the Driver IDs it depends on (a Mechanism caps the drivers that sit on it).", ""),
         ("2. Signals", "One row per signal (S1, S2, ...), linked to a Driver ID. Max 5 per driver. At least one must be Tier A or B, otherwise the driver shows 'narrative-only'. Set polarity, tolerance band and max staleness here: these are the scoring rules. Columns N-P: mark the one binding-constraint signal per driver (Y), any kill-switch signal (Y), and the anchor that justifies the base case and tolerance (guidance, a competitor's disclosed figure, the stock's own history).", ""),
-        ("3. Base case", "Quantified path per numeric signal and period, with a version label (v1, v2, ...) and snapshot date. Consensus rows are what colours are scored against. Management and Thesis rows are reference lines only (Thesis = our own base case from the thesis work). Never overwrite old versions: add a new version after each earnings call.", ""),
+        ("3. Base case", "Quantified path per numeric signal and period, with a version label (v1, v2, ...) and snapshot date. Colours are scored against the Consensus row; when a signal has no Consensus row for that version and period, against the Thesis row (our own estimate, shown in the app as 'vs our estimate'; 'Scored against' in the Scoring log says which). Management rows are reference lines only. Never overwrite old versions: add a new version after each earnings call.", ""),
         ("4. Event ladder", "For milestone signals (launches, approvals, bill passage, contract awards). List the steps in order with a target date each; update status as they happen. Column K says what kind of step it is: Milestone, Catalyst, Falsification test, Thesis breaker or Disclosure.", ""),
         ("5. Source log", "Every source used: URL, access method, cost, ToS / redistribution note. Give each a Source ID (R1, R2, ...).", ""),
         ("6. Scoring log", "WHERE YOU SCORE. Add one row per observation of a numeric signal: date, Signal ID, observed value, base case version, period. Everything else fills in. You only choose the arrow and add a source ID.", ""),
@@ -135,7 +135,7 @@ def build_ticker_template(path):
     dropdown(s, "N", ["Y", "N"])
     dropdown(s, "O", ["Y", "N"])
     for r in range(2, ROWS + 1):
-        s[f"I{r}"].number_format = "0%"
+        s[f"I{r}"].number_format = "0.0%"
 
     # Base case
     b = wb.create_sheet("Base case")
@@ -177,18 +177,25 @@ def build_ticker_template(path):
     # Scoring log
     sc = wb.create_sheet("Scoring log")
     make_table(sc,
-        ["Date observed", "Signal ID", "Observed value", "Base case version", "Period", "Base case value", "Variance %", "Polarity", "Tolerance", "Max staleness (days)", "Data status", "Colour", "Arrow (momentum)", "Source ID", "Notes", "Withheld? (Y = company skipped a natural chance to disclose)"],
-        [14, 11, 15, 14, 16, 15, 12, 17, 11, 13, 12, 12, 18, 11, 36, 16], calc_cols=(6, 7, 8, 9, 10, 11, 12))
+        ["Date observed", "Signal ID", "Observed value", "Base case version", "Period", "Base case value", "Variance %", "Polarity", "Tolerance", "Max staleness (days)", "Data status", "Colour", "Arrow (momentum)", "Source ID", "Notes", "Withheld? (Y = company skipped a natural chance to disclose)", "Scored against"],
+        [14, 11, 15, 14, 16, 15, 12, 17, 11, 13, 12, 12, 18, 11, 36, 16, 13], calc_cols=(6, 7, 8, 9, 10, 11, 12, 17))
     dropdown(sc, "M", ["Accelerating", "Flat", "Decelerating", "n/a"])
     dropdown(sc, "P", ["Y", "N"])
     SIG = f"Signals!$A$2:$A${ROWS}"
     for r in range(2, ROWS + 1):
         sc[f"A{r}"].number_format = "yyyy-mm-dd"
         sc[f"G{r}"].number_format = "0.0%"
-        sc[f"I{r}"].number_format = "0%"
-        crit = (f"'Base case'!$D$2:$D${ROWS},B{r},'Base case'!$A$2:$A${ROWS},D{r},"
-                f"'Base case'!$E$2:$E${ROWS},E{r},'Base case'!$C$2:$C${ROWS},\"Consensus\"")
-        sc[f"F{r}"] = f'=IF(B{r}="","",IF(COUNTIFS({crit})=0,"",SUMIFS(\'Base case\'!$F$2:$F${ROWS},{crit})))'
+        sc[f"I{r}"].number_format = "0.0%"
+        # Scored against the Consensus row; if there is none for this signal, version and period, the Thesis row
+        # (owner decision 2026-11-07; the app labels it "vs our estimate"). Same rule as app.scoring_base().
+        key = (f"'Base case'!$D$2:$D${ROWS},B{r},'Base case'!$A$2:$A${ROWS},D{r},"
+               f"'Base case'!$E$2:$E${ROWS},E{r},'Base case'!$C$2:$C${ROWS},")
+        con, the = key + '"Consensus"', key + '"Thesis"'
+        val = f"SUMIFS('Base case'!$F$2:$F${ROWS},"
+        sc[f"F{r}"] = (f'=IF(B{r}="","",IF(COUNTIFS({con})>0,{val}{con}),'
+                       f'IF(COUNTIFS({the})>0,{val}{the}),"")))')
+        sc[f"Q{r}"] = (f'=IF(B{r}="","",IF(COUNTIFS({con})>0,"Consensus",'
+                       f'IF(COUNTIFS({the})>0,"Thesis","")))')
         sc[f"G{r}"] = f'=IF(OR(NOT(ISNUMBER(C{r})),NOT(ISNUMBER(F{r}))),"",IF(F{r}=0,"",(C{r}-F{r})/ABS(F{r})))'
         sc[f"H{r}"] = f'=IF(B{r}="","",IFERROR(INDEX(Signals!$H$2:$H${ROWS},MATCH(B{r},{SIG},0)),""))'
         sc[f"I{r}"] = f'=IF(B{r}="","",IFERROR(IF(INDEX(Signals!$I$2:$I${ROWS},MATCH(B{r},{SIG},0))="","",INDEX(Signals!$I$2:$I${ROWS},MATCH(B{r},{SIG},0))),""))'

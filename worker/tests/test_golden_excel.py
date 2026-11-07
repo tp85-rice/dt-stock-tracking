@@ -58,7 +58,9 @@ BASE = [base(s, "Q1", 100) for s in ("S1", "S2", "S3", "S4", "S5", "S6")] + [
     base("S1", "Q3", 100, case="Management"),
     base("S1", "Q4", -50),
     base("S2", "Q1", 80, version="v2"),
-    base("S3", "Q1", 500, case="Thesis"),                      # reference only, never scored
+    base("S3", "Q1", 500, case="Thesis"),                      # Consensus exists for S3 Q1, so not used
+    base("S1", "Q5", 100, case="Thesis"),                      # no Consensus: scored against Thesis
+    base("S1", "Q6", 100, case="Management"),                  # Management alone: never scored
 ]
 
 
@@ -78,6 +80,8 @@ SCORES = [
     obs("S1", 120, version="v7"),                              # no base case
     obs("S1", 5, period="Q2"),                                 # zero base
     obs("S1", 120, period="Q3"),                               # management only
+    obs("S1", 95, period="Q5"), obs("S1", 80, period="Q5"),    # Thesis fallback: YELLOW, RED
+    obs("S1", 120, period="Q6"),                               # Management only -> GREY
     obs("S1", -40, period="Q4"), obs("S1", -60, period="Q4"),  # negative base
     obs("S1", 120, period="q1", version="V1"),                 # case-insensitive match
     dict(obs("S1", None), withheld="Y"),                       # withheld -> RED
@@ -129,12 +133,14 @@ def test_database_matches_spreadsheet(db, tmp_path):
     # Scoring log: G = variance, K = data status, L = colour.
     ws = excel["Scoring log"]
     rows = db.execute(
-        "select data_status, colour, variance from v_scores where ticker = 'GOLD' order by observation_id"
+        "select data_status, colour, variance, base_type from v_scores where ticker = 'GOLD' order by observation_id"
     ).fetchall()
     assert len(rows) == len(SCORES)
-    for i, (status, colour, variance) in enumerate(rows, start=2):
+    assert any(r[3] == "Thesis" for r in rows)
+    for i, (status, colour, variance, base_type) in enumerate(rows, start=2):
         x_var = ws[f"G{i}"].value
         assert (ws[f"K{i}"].value, ws[f"L{i}"].value) == (status, colour), f"Scoring log row {i}"
+        assert (ws[f"Q{i}"].value or None) == base_type, f"Scoring log row {i}, scored against"
         if isinstance(x_var, (int, float)):
             assert float(variance) == pytest.approx(x_var), f"Scoring log row {i} variance"
         else:

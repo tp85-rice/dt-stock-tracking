@@ -222,6 +222,23 @@ def test_withheld_flag_ignored_when_value_present(db):
     assert db.execute("select colour, data_status from v_scores").fetchone() == ("GREEN", "OK")
 
 
-def test_thesis_rows_are_not_scored(db):
+def test_thesis_row_is_scored_when_no_consensus(db):
+    # Owner decision 2026-11-07: no Consensus row -> score against the Thesis row, labelled "vs our estimate".
     _setup(db, case_type="Thesis")
+    assert _score(db, 120)[:2] == ("GREEN", "OK")
+    assert db.execute("select base_type, base_value from v_scores").fetchone() == ("Thesis", 100)
+    assert db.execute("select base_type from v_signal_latest").fetchone() == ("Thesis",)
+
+
+def test_consensus_wins_over_thesis(db):
+    _setup(db, base=100)
+    db.execute("""insert into base_case (ticker, version, case_type, signal_code, period, value)
+                  values ('NVDA', 'v1', 'Thesis', 'S1', 'Q3 FY26', 200)""")
+    assert _score(db, 120)[:2] == ("GREEN", "OK")
+    assert db.execute("select base_type, base_value from v_scores").fetchone() == ("Consensus", 100)
+
+
+def test_thesis_for_another_period_is_not_used(db):
+    _setup(db, case_type="Thesis", period="Q4 FY26")
     assert _score(db, 120)[:2] == ("GREY", "No base case")
+    assert db.execute("select base_type from v_scores").fetchone() == (None,)

@@ -152,7 +152,8 @@
       "colour": "GREY",
       "arrow": "Accelerating",
       "source_code": "R3",
-      "age_days": 6
+      "age_days": 6,
+      "base_type": null
     },
     {
       "ticker": "NVDA",
@@ -177,7 +178,8 @@
       "colour": "GREY",
       "arrow": "Flat",
       "source_code": "R7",
-      "age_days": 28
+      "age_days": 28,
+      "base_type": null
     },
     {
       "ticker": "NVDA",
@@ -202,7 +204,8 @@
       "colour": "GREY",
       "arrow": null,
       "source_code": null,
-      "age_days": null
+      "age_days": null,
+      "base_type": null
     },
     {
       "ticker": "NVDA",
@@ -227,7 +230,8 @@
       "colour": "GREY",
       "arrow": "Accelerating",
       "source_code": "R1",
-      "age_days": 71
+      "age_days": 71,
+      "base_type": null
     },
     {
       "ticker": "NVDA",
@@ -252,7 +256,8 @@
       "colour": "GREY",
       "arrow": "Flat",
       "source_code": "R2",
-      "age_days": 71
+      "age_days": 71,
+      "base_type": null
     },
     {
       "ticker": "NVDA",
@@ -277,7 +282,8 @@
       "colour": "GREY",
       "arrow": null,
       "source_code": null,
-      "age_days": null
+      "age_days": null,
+      "base_type": null
     },
     {
       "ticker": "NVDA",
@@ -302,7 +308,8 @@
       "colour": "GREY",
       "arrow": "Accelerating",
       "source_code": "R1",
-      "age_days": 71
+      "age_days": 71,
+      "base_type": null
     },
     {
       "ticker": "NVDA",
@@ -327,7 +334,8 @@
       "colour": "GREY",
       "arrow": "Accelerating",
       "source_code": "R10",
-      "age_days": 71
+      "age_days": 71,
+      "base_type": null
     },
     {
       "ticker": "NVDA",
@@ -352,7 +360,8 @@
       "colour": "GREY",
       "arrow": "Accelerating",
       "source_code": "R1",
-      "age_days": 71
+      "age_days": 71,
+      "base_type": null
     }
   ],
   "history": [
