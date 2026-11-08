@@ -11,6 +11,16 @@ Decisions 1-3 were taken on 2026-11-07. They may change as we use them; each ent
 - [x] **3. S5 gross margin tolerance.** *Decided 2026-11-07 (owners took the suggestion).* 2% -> 0.7% of base (about 0.5 points on a 74% margin), so YELLOW = inside NVIDIA's guided band and RED = below it. This also recolours past S5 readings. *Where it lives:* `research/NVDA/driver_spec.json` / the NVDA sheet (Signals, Tolerance), and a one-row update in the same migration. *To change:* edit the sheet and re-import, or update `signals.tolerance`.
 - [x] ~~4. Keep S4 (non-hyperscale demand)?~~ Resolved 2026-11-05: NVIDIA discloses the "AI Clouds, Industrial & Enterprise" split, so S4 stays (with a definition-change flag for the recasts).
 
+## GRAB driver sheet (draft 2026-11-08, from the owners' Nov 7 base case file)
+
+Draft: `inputs/GRAB_driver_sheet.xlsx`; notes and checks: `research/GRAB/research_notes.md`. Nothing is imported until the owners say so.
+
+- [ ] **7. Review and import the GRAB sheet.** *Suggestion:* read section 4 of the research notes (colour differences), then `python -m worker.import_xlsx inputs/GRAB_driver_sheet.xlsx --dry-run` and, if clean, the same without `--dry-run`.
+- [ ] **8. D1 has 6 signals (cap 5).** *Suggestion:* drop S2 (revenue) or S5 (mobility revenue growth); S1 (EBITDA) already carries the consensus comparison and S4 covers mobility.
+- [ ] **9. GMV thesis-break line: 15% or 12%?** The owners' notes moved it from 12% (May 19) to 15% (Aug 6). The draft uses 15% (S3 tolerance 0.25).
+- [ ] **10. Tolerances proposed by Claude** where the file gives no red line: S1 5%, S2 3%, S4 5%, S6 35%, S9 red below -$20M, S11 10%. Each is anchored in the sheet's Threshold anchor column.
+- [ ] **11. S5 mobility revenue growth has no base case** (shows GREY; the file shows yellow). *Suggestion:* a Thesis row at the 8% alert line, or a per-quarter path.
+
 ## Charts
 
 - [ ] **6. A share-price source for valuation history** (P/E, EV/Sales over time). SEC filings have no prices, and
@@ -30,6 +40,10 @@ Decisions 1-3 were taken on 2026-11-07. They may change as we use them; each ent
   3. **Alpha Vantage free** (official API, 25 calls a day). Personal, non-commercial use only; showing data to others
      is reportedly treated as commercial. Ask before relying on it. https://www.alphavantage.co/terms_of_service/
   Until one is agreed, the charts show revenue and margins only.
+  *Asked 2026-11-08: could an agent read prices from Yahoo Finance?* Technically yes, but Yahoo's terms forbid
+  automated collection and showing its data to others, the unofficial libraries (yfinance) say "personal use only"
+  and break often, and a scraped source cannot be relied on for a daily job. Not recommended for the site. The same
+  applies to stockanalysis.com (R9 in the GRAB file).
 
 ## Thesis work
 
