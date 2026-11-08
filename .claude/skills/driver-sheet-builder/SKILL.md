@@ -85,6 +85,25 @@ Target date = the base-case date; leave blank when the base case expects it not 
 2. Run `python -m worker.sheet_writer research/[TICKER]/driver_spec.json inputs/[TICKER]_driver_sheet.xlsx`. Fix every `[ERROR]`; read every `[WARNING]` and either fix it or explain it in the report.
 3. Report to the owners in the reply, briefly: drivers with type and binding constraint; which signals are scored now vs. GREY and why; every **Gap** (number not found, consensus missing, disclosure uncertain); every **conflict** between sources; decisions the owners must make. Do not import; the owners review first.
 
+## Starting from an owners' base case file
+
+The owners may hand over their own research file for a ticker (first case: `research/GRAB/GRAB_Base_Case_and_Dashboard.md`, Nov 2026): a base case, a driver dashboard with signals, readings, history, thresholds, sources, and often a machine-readable JSON appendix. Treat it as the research for Steps 1–6, not as the sheet. Worked example: `research/GRAB/research_notes.md` and `research/GRAB/driver_spec.json`.
+
+1. **Keep the file** in `research/[TICKER]/` unchanged, as the record. It may contain ratings, prices and fair values; they stay there (Hard rule 1).
+2. **Check the numbers against primary sources** before using them: open the filings (SEC 10-Q / 10-K, or 6-K Exhibit 99.1 press releases for foreign issuers) for the latest quarter and every history point. Use the filing's figure; list every correction, every `[VERIFY]` you resolved, and every definition change you found in the research notes. Re-source history rows to the filing that reported them; date each reading with the filing date.
+3. **Map the base case** by the file's own labels (its JSON `base_type` field, or "(consensus)" / "(our est.)" in the tables):
+   - consensus → **Consensus** row (source logged per decision 1: Tier C, Redistribute = No). Conflicting consensus figures: one Consensus row (the one quoted as consensus), the other as a Management or note.
+   - figures implied by company guidance → **Management** row (midpoint; range in Notes). If the file uses them as the base case for the next print and no consensus exists, add a **Thesis** row with the same value.
+   - our estimate with a green line ("≥20%", "at least $2.0B") → **Thesis** row = that line, for the latest period and the next one.
+   - a red, breach or thesis-break line → **tolerance** = |base − line| / |base| (Threshold anchor says where it came from). A breach line with no green line → Thesis row = the breach line, tolerance 0 or as stated.
+   - "no base case" → no row (GREY), even if the file shows a colour; put any alert line in Threshold anchor.
+   - no red line given → propose a tolerance anchored to the metric's own history, and say "Proposed by Claude; owners to confirm" in Threshold anchor and in the report.
+4. **Non-numeric signals** (regulation, ratings, index reviews, deal approvals): polarity Event ladder. Breach conditions are **Thesis breaker** steps (Status Failed = it happened, RED; Pending = not yet); dated events are **Catalyst** or **Milestone** steps. Put past negative events in Notes, not as Occurred steps (an Occurred step shows GREEN).
+5. **The file's thesis-break and catalyst tables** become Event ladder steps on the matching signals; disclosure gaps become **Disclosure** steps (House Rule).
+6. **Respect the sheet's limits:** at most 5 signals per driver (drop context-only or stale signals first and list them; if a driver is still over, report it as an owner decision), never a stock-level score, Share of price blank unless the file gives a share of *price* (a share of EBITDA or of value is not one).
+7. **Compare colours.** Import the sheet into a throwaway local database (`worker/tests` setup, `app.today` = today), list each signal's app colour next to the file's, and explain every difference in the report (the app rule wins; usually the file's yellow reflects a trend or judgment, not a line).
+8. **Feeds:** say which signals an existing feed can read (US 10-Q/10-K XBRL) and which need the agents or hand entry (6-K releases have no XBRL).
+
 ## Mapping from the bundle's dashboard to the sheet
 
 | Bundle concept | Sheet |
