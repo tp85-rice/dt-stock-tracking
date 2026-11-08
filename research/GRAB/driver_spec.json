@@ -2,7 +2,7 @@
  "_comment": "GRAB driver sheet spec, built 2026-11-08 from the owners' base case file (research/GRAB/GRAB_Base_Case_and_Dashboard.md, Nov 7) and checked against Grab's 6-K releases. See research/GRAB/research_notes.md.",
  "ticker": "GRAB",
  "archetype": "Southeast Asia superapp: mobility, deliveries, financial services",
- "owner_note": "Draft by agent 2026-11-08 from the owners' Nov 7 base case file, unreviewed",
+ "owner_note": "Draft by agent 2026-11-08 from the owners' Nov 7 base case file; thresholds and D1's six signals accepted by the owners 2026-11-08; not yet imported",
  "Drivers": [
   {
    "code": "D1",
@@ -16,7 +16,7 @@
    "thesis": "Malaysia, Singapore and the Philippines (about 62% of FY2025 revenue) fund the rest; if mobility take rates hold and the deliveries margin keeps rising, adjusted EBITDA compounds faster than revenue.",
    "evidence": "R1, R2, R11-R15",
    "depends_on": "D3, D6",
-   "notes": "Owners' file: about 48% of the 2028 EBITDA lift (Deliveries ~22%, Mobility ~21%, Others ~5%). That is a share of EBITDA lift, not of today's price, so Share of price is left blank (decision 5). Capped by D3 if D3 turns red; translation drag from D6 (Indonesia about 21% of revenue)."
+   "notes": "Owners' file: about 48% of the 2028 EBITDA lift (Deliveries ~22%, Mobility ~21%, Others ~5%). That is a share of EBITDA lift, not of today's price, so Share of price is left blank (decision 5). Capped by D3 if D3 turns red; translation drag from D6 (Indonesia about 21% of revenue). Six signals kept on purpose (owners 2026-11-08), one over the usual cap of 5; the app shows an 'over cap' tag on this driver."
   },
   {
    "code": "D2",
@@ -102,7 +102,7 @@
    "reliability": 4,
    "star": "Y",
    "kill_switch": "N",
-   "anchor": "Proposed by Claude: the Q4 figure implied by the FY26 guide is $231-241M (about 2% either side of the midpoint); 5% allows for a single-source consensus. Owners to confirm.",
+   "anchor": "Set by Claude, accepted by the owners 2026-11-08: the Q4 figure implied by the FY26 guide is $231-241M (about 2% either side of the midpoint); 5% allows for a single-source consensus.",
    "notes": "Feed: agent: web (Grab files 6-K press releases without XBRL, so the SEC feeds cannot read them). Q3 2026 was helped by the consolidation of Superbank and Stash."
   },
   {
@@ -119,7 +119,7 @@
    "reliability": 4,
    "star": "N",
    "kill_switch": "N",
-   "anchor": "Proposed by Claude: the Q4 range implied by the FY26 guide is $1,086-1,136M (about 2.3% either side of the midpoint). Owners to confirm.",
+   "anchor": "Set by Claude, accepted by the owners 2026-11-08: the Q4 range implied by the FY26 guide is $1,086-1,136M (about 2.3% either side of the midpoint).",
    "notes": "Feed: agent: web (Grab files 6-K press releases without XBRL, so the SEC feeds cannot read them)."
   },
   {
@@ -136,7 +136,7 @@
    "reliability": 4,
    "star": "N",
    "kill_switch": "Y",
-   "anchor": "Base 20% (owners' estimate). Red below 15%, the owners' thesis-break line (two straight quarters below about 15% CC). The owners' notes moved this line from 12% (May 19) to 15% (Aug 6): one must be chosen.",
+   "anchor": "Base 20% (owners' estimate). Red below 15%, the owners' thesis-break line (two straight quarters below about 15% CC). 15% used for now (owners 2026-11-08); the notes once said 12% (May 19). Duong to confirm.",
    "notes": "Feed: agent: web (Grab files 6-K press releases without XBRL, so the SEC feeds cannot read them). The gap between reported and constant-currency growth (4 points in Q3 2026) is the rupiah drag."
   },
   {
@@ -153,7 +153,7 @@
    "reliability": 4,
    "star": "N",
    "kill_switch": "N",
-   "anchor": "Base 8.5% (owners' estimate). Proposed by Claude: red below about 8.1%, under every quarter since Q2 2025 (8.56%-8.91%). Owners to confirm.",
+   "anchor": "Base 8.5% (owners' estimate). Set by Claude, accepted by the owners 2026-11-08: red below about 8.1%, under every quarter since Q2 2025 (8.56%-8.91%).",
    "notes": "Feed: agent: web (Grab files 6-K press releases without XBRL, so the SEC feeds cannot read them). Computed as Mobility segment adjusted EBITDA divided by Mobility GMV (the release does not state it). Held through the Jul 1 2026 Indonesia two-wheel cap."
   },
   {
@@ -186,7 +186,7 @@
    "reliability": 4,
    "star": "N",
    "kill_switch": "N",
-   "anchor": "Base 4% is the owners' longer-run target, not a per-quarter path. Proposed by Claude: tolerance 35% (red below 2.6%) so the current climb shows yellow, as in the owners' file. A per-quarter path would be better.",
+   "anchor": "Base 4% is the owners' longer-run target, not a per-quarter path. Set by Claude, accepted by the owners 2026-11-08: tolerance 35% (red below 2.6%) so the current climb shows yellow, as in the owners' file. A per-quarter path would be better.",
    "notes": "Feed: agent: web (Grab files 6-K press releases without XBRL, so the SEC feeds cannot read them). Computed as Deliveries segment adjusted EBITDA divided by Deliveries GMV; the release rounds it to one decimal (2.3%, 2.3%, 2.7%). Advertising is the main lever."
   },
   {
@@ -203,7 +203,7 @@
    "reliability": 4,
    "star": "Y",
    "kill_switch": "Y",
-   "anchor": "Base -$10M (owners' green line: a loss no worse than $10M). Proposed by Claude: red when the loss is worse than $20M, i.e. widening past Q1 2026 (-$17M). Owners to confirm.",
+   "anchor": "Base -$10M (owners' green line: a loss no worse than $10M). Set by Claude, accepted by the owners 2026-11-08: red when the loss is worse than $20M, i.e. widening past Q1 2026 (-$17M).",
    "notes": "Feed: agent: web (Grab files 6-K press releases without XBRL, so the SEC feeds cannot read them). First profit in Q3 2026, a quarter earlier than guided (breakeven was guided for H2 2026)."
   },
   {
@@ -238,7 +238,7 @@
    "star": "N",
    "kill_switch": "N",
    "definition_change": "2026-05-05: 'Loan portfolio' became 'Gross loan portfolio' (Q3 2025 restated from $821M to $903M). Series starts Q1 2026.",
-   "anchor": "Base $2.6B for Q3 2026 and $3.0B for Q4 2026 (owners: on track for $3.0B at year end). Proposed by Claude: tolerance 10%. Management targets more than $6B in 2028.",
+   "anchor": "Base $2.6B for Q3 2026 and $3.0B for Q4 2026 (owners: on track for $3.0B at year end). Set by Claude, accepted by the owners 2026-11-08: tolerance 10%. Management targets more than $6B in 2028.",
    "notes": "Feed: agent: web (Grab files 6-K press releases without XBRL, so the SEC feeds cannot read them). Customer deposits $2.7B at Q3 2026."
   },
   {
