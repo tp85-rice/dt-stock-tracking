@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getTickerPage, getViewer } from "@/lib/data";
 import type { Driver, EventStep, Observation, SignalLatest, Source } from "@/lib/types";
-import { StatusChip, EventChip, Arrow } from "@/components/Status";
+import { StatusChip, EventChip, LadderChip, Arrow } from "@/components/Status";
 import { formatValue } from "@/lib/format";
 import { Sparkline } from "@/components/Sparkline";
 import { NotMember } from "@/components/NotMember";
@@ -50,7 +50,8 @@ export default async function TickerPageView({ params }: { params: Promise<{ tic
 
       <div className="drivers">
         {drivers.map((d) => (
-          <DriverCard key={d.code} driver={d} signals={signals.filter((s) => s.driver_code === d.code)} history={bySignal} />
+          <DriverCard key={d.code} driver={d} signals={signals.filter((s) => s.driver_code === d.code)} history={bySignal}
+            steps={(code) => events.filter((e) => e.signal_code === code)} />
         ))}
       </div>
 
@@ -70,8 +71,8 @@ export default async function TickerPageView({ params }: { params: Promise<{ tic
   );
 }
 
-function DriverCard({ driver, signals, history }: {
-  driver: Driver; signals: SignalLatest[]; history: (code: string) => Observation[];
+function DriverCard({ driver, signals, history, steps }: {
+  driver: Driver; signals: SignalLatest[]; history: (code: string) => Observation[]; steps: (code: string) => EventStep[];
 }) {
   return (
     <section className="card" aria-labelledby={`d-${driver.code}`}>
@@ -115,7 +116,7 @@ function DriverCard({ driver, signals, history }: {
                       {s.source_code && ` · source ${s.source_code}`}
                     </div>
                   </td>
-                  <td data-label="Status"><StatusChip colour={s.colour} detail={s.data_status} /></td>
+                  <td data-label="Status">{s.polarity === "Event ladder" ? <LadderChip steps={steps(s.signal_code)} /> : <StatusChip colour={s.colour} detail={s.data_status} />}</td>
                   <td className="num" data-label="Latest">{s.polarity === "Event ladder" ? <span className="small muted">see milestones</span> : fmt(s.observed_value, s.unit)}</td>
                   <td className="num hide-sm">
                     {pct(s.variance)}
