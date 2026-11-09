@@ -16,3 +16,10 @@ on your own. The organization does not allow the Google Docs connector, so each 
 4. Never delete, trash or rename older versions; the owners delete them by hand. Tell the owners the new version's link.
 5. Facts only, no advice: no ratings, price targets or buy/sell wording (same rule as the app).
 
+
+## Terminal guide (owners' handbook)
+
+`docs/TERMINAL_GUIDE.html` explains why some jobs run in the owners' Mac Terminal and gives copy-ready commands for
+each job. It is published at https://claude.ai/artifact/JbBsLCZx3WuP1nirRCdync. Whenever a command, a flag, a job,
+a setup step or a common error changes, update that file in the same pull request and republish it to the same
+artifact (owners use macOS with zsh and a `.venv` in `~/dt-stock-tracking`).

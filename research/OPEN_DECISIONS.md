@@ -19,7 +19,7 @@ Draft: `inputs/GRAB_driver_sheet.xlsx`; notes and checks: `research/GRAB/researc
 - [x] **8. D1 has 6 signals (cap 5).** *Decided 2026-11-08:* keep all six. The cap of 5 is a guideline; the owners may keep more on a driver when each signal earns its place. The app shows an "over cap" tag on GRAB D1 and the import prints a warning; both are expected. *Precedent for future tickers:* report the overflow, suggest which to drop, and keep them all if the owners say so.
 - [ ] **9. GMV thesis-break line: 15% or 12%?** *Interim 2026-11-08:* 15% for now (S3 tolerance 0.25). **Owner: Duong** to confirm or change. To change: S3 tolerance in the GRAB sheet (12% would be 0.40) and the S3 thesis-breaker step, then re-import.
 - [x] **10. Tolerances proposed by Claude** (S1 5%, S2 3%, S4 5%, S6 35%, S9 red below -$20M, S11 10%). *Decided 2026-11-08:* accepted as proposed. Each is anchored in the sheet's Threshold anchor column. *Precedent:* where an owners' file gives no red line, Claude proposes one anchored to the metric's history or guidance range and the owners accept or change it.
-- [ ] **11. S5 mobility revenue growth has no base case** (shows GREY; the file shows yellow). *Suggestion:* a Thesis row at the 8% alert line, or a per-quarter path.
+- [x] **11. S5 mobility revenue growth had no base case.** *Decided 2026-11-08:* a Thesis row at the owners' 8% alert line (tolerance 0: green at or above 8%, red below). Q3 2026 (+10%) shows green; the file showed yellow because of the slowdown, which the arrow (Decelerating) still shows.
 
 ## Charts
 

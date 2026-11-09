@@ -169,8 +169,9 @@
    "reliability": 4,
    "star": "N",
    "kill_switch": "N",
-   "anchor": "No base case (owners' file). Owners' alert line: below 8% would be red. Add a Thesis row to score it.",
-   "notes": "Feed: agent: web (Grab files 6-K press releases without XBRL, so the SEC feeds cannot read them). Reported (not constant-currency) growth. Slowed from 19% in Q1 2026; reasons named on the Q3 call: cheaper ride options, the Indonesia commission cap, higher incentives. The weakest part of the core."
+   "anchor": "Base 8% = the owners' alert line (owners 2026-11-08): green at or above 8%, red below it, no yellow band. The file had no base case; the line is a floor, not a forecast.",
+   "notes": "Feed: agent: web (Grab files 6-K press releases without XBRL, so the SEC feeds cannot read them). Reported (not constant-currency) growth. Slowed from 19% in Q1 2026; reasons named on the Q3 call: cheaper ride options, the Indonesia commission cap, higher incentives. The weakest part of the core.",
+   "tolerance": 0
   },
   {
    "code": "S6",
@@ -1050,6 +1051,28 @@
    "unit": "%",
    "source": "R1",
    "notes": "Owners' estimate: at least 8.5% of GMV."
+  },
+  {
+   "version": "v1",
+   "snapshot": "2026-11-07",
+   "case_type": "Thesis",
+   "signal": "S5",
+   "period": "Q3 2026",
+   "value": 8,
+   "unit": "%",
+   "source": "R1",
+   "notes": "Owners' alert line (decision 2026-11-08): mobility revenue growth below 8% YoY is red."
+  },
+  {
+   "version": "v1",
+   "snapshot": "2026-11-07",
+   "case_type": "Thesis",
+   "signal": "S5",
+   "period": "Q4 2026",
+   "value": 8,
+   "unit": "%",
+   "source": "R1",
+   "notes": "Owners' alert line (decision 2026-11-08): mobility revenue growth below 8% YoY is red."
   },
   {
    "version": "v1",
