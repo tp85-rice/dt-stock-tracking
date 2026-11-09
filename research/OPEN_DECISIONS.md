@@ -13,7 +13,7 @@ Decisions 1-3 were taken on 2026-11-07. They may change as we use them; each ent
 
 ## NVDA base case draft (2026-11-09)
 
-- [ ] **12. Approve the NVDA base case draft, then re-import.** 19 new v1 rows (18 Thesis, 1 Management), all anchored to SEC filings; table and colours in `research/NVDA/research_notes.md` ("Base case draft"). Result: S1, S2, S4, S5 green; S7 yellow; S8 (DSO) and S9 (supply commitments) red. **Base case rows cannot be changed after import** (only replaced by a v2), so approve or edit first. Then: Terminal guide C2 (`python -m worker.import_xlsx inputs/NVDA_driver_sheet.xlsx --dry-run`, then without `--dry-run`).
+- [x] **12. Approve the NVDA base case draft, then re-import.** *Approved by the owners 2026-11-09; import pending on the owners' Mac.* 19 new v1 rows (18 Thesis, 1 Management), all anchored to SEC filings; table and colours in `research/NVDA/research_notes.md` ("Base case draft"). Result: S1, S2, S4, S5 green; S7 yellow; S8 (DSO) and S9 (supply commitments) red. **Base case rows cannot be changed after import** (only replaced by a v2), so approve or edit first. Then: Terminal guide C2 (`python -m worker.import_xlsx inputs/NVDA_driver_sheet.xlsx --dry-run`, then without `--dry-run`).
 - [ ] **13. Gross-margin consensus (decision 1) still missing.** cnbc.com and reuters.com are blocked here. *Suggestion:* after Nov 17, paste the article link and the quoted figure in chat, or allow those sites in the environment's network settings so Claude can read them.
 
 ## GRAB driver sheet (draft 2026-11-08, from the owners' Nov 7 base case file)
