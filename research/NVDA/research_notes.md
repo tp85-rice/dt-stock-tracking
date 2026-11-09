@@ -75,3 +75,28 @@ October 2026 is due around 2026-11-10.
 - Analyst consensus for Q3 FY27 (revenue, gross margin) and pre-report consensus for Q2 FY27: blocked sources.
 - 2026 capex guidance per hyperscaler (earnings calls, not in 10-Qs).
 - US export-control notices (R9): bis.gov not tried.
+
+## Base case draft, 2026-11-09 (v1, not yet imported)
+
+Every anchor below was opened on www.sec.gov on 2026-11-09 (R21-R31 in the Source log). Rule for past periods: a base
+row may use only what was known before the result (prior guidance, pre-report consensus, or a rule fixed in advance),
+never the result itself.
+
+| Signal | Rows | How it was set | App colour now |
+|---|---|---|---|
+| S1 Big-4 capex | Thesis Q2, Q3, Q4 CY26 = prior quarter's level | Rule: capex at least holds QoQ (company capex guidance not verified) | GREEN (+22.3%) |
+| S2 TSMC monthly YoY (NT$) | Thesis Jul-Sep 2026 +46.1%, Oct-Dec 2026 +62.0% | TSMC's own quarterly guidance at its stated FX rate vs the prior-year quarter (R22-R24) | GREEN (Sep +54.6%) |
+| S4 ACIE | Thesis Q2 FY27 $35.90B, Q3 FY27 $45.25B | Prior quarter grown at the company revenue guide ($91.0B, $108.0B) | GREEN (+12.3%) |
+| S5 gross margin | Management + Thesis Q2 FY27 74.9%; Thesis Q3 FY27 74.0% | GAAP guidance midpoints (R21, R2) | GREEN (75.0%) |
+| S7 inventory | Thesis Q2 FY27 $28.76B, Q3 FY27 $35.44B | Prior quarter scaled by guided revenue growth (the sheet's anchor) | YELLOW (+9.8%) |
+| S8 DSO | Thesis Q2 FY27 48.9 days, Q3 FY27 51.0 days | Average of the previous 8 quarters (43, 46, 53, 46, 54, 53, 51, 45; R25-R31, R10) | RED (60 days, +22.7%) |
+| S9 supply commitments | Thesis Q2 FY27 $141.2B | Commitments-to-next-quarter-guide ratio held (119/91.0 = 1.31x, times 108.0) | RED ($279B, +98%) |
+
+**Consensus (decision 1): still a gap.** Search coverage says LSEG expected Q2 FY27 revenue of about $92.2B (not a signal)
+and CNBC wrote that NVIDIA was "expected to report a healthy 75% gross margin", but cnbc.com and reuters.com are blocked
+from this environment, so no consensus figure was read from an opened page and none is used. S5 uses the guidance
+midpoint instead. After the Nov 17 print, an owner can paste the article's link and figure, or allow cnbc.com /
+reuters.com in the environment's network settings.
+
+Not set yet: S3 (no Rubin disclosure), S6 (event ladder), S9 for Q3 FY27 (needs the Q4 guide on Nov 17), S1 for
+periods before Q2 CY26 and other older history (grey by design).
