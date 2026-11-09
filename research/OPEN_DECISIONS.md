@@ -11,6 +11,11 @@ Decisions 1-3 were taken on 2026-11-07. They may change as we use them; each ent
 - [x] **3. S5 gross margin tolerance.** *Decided 2026-11-07 (owners took the suggestion).* 2% -> 0.7% of base (about 0.5 points on a 74% margin), so YELLOW = inside NVIDIA's guided band and RED = below it. This also recolours past S5 readings. *Where it lives:* `research/NVDA/driver_spec.json` / the NVDA sheet (Signals, Tolerance), and a one-row update in the same migration. *To change:* edit the sheet and re-import, or update `signals.tolerance`.
 - [x] ~~4. Keep S4 (non-hyperscale demand)?~~ Resolved 2026-11-05: NVIDIA discloses the "AI Clouds, Industrial & Enterprise" split, so S4 stays (with a definition-change flag for the recasts).
 
+## NVDA base case draft (2026-11-09)
+
+- [ ] **12. Approve the NVDA base case draft, then re-import.** 19 new v1 rows (18 Thesis, 1 Management), all anchored to SEC filings; table and colours in `research/NVDA/research_notes.md` ("Base case draft"). Result: S1, S2, S4, S5 green; S7 yellow; S8 (DSO) and S9 (supply commitments) red. **Base case rows cannot be changed after import** (only replaced by a v2), so approve or edit first. Then: Terminal guide C2 (`python -m worker.import_xlsx inputs/NVDA_driver_sheet.xlsx --dry-run`, then without `--dry-run`).
+- [ ] **13. Gross-margin consensus (decision 1) still missing.** cnbc.com and reuters.com are blocked here. *Suggestion:* after Nov 17, paste the article link and the quoted figure in chat, or allow those sites in the environment's network settings so Claude can read them.
+
 ## GRAB driver sheet (draft 2026-11-08, from the owners' Nov 7 base case file)
 
 Draft: `inputs/GRAB_driver_sheet.xlsx`; notes and checks: `research/GRAB/research_notes.md`. Nothing is imported until the owners say so.

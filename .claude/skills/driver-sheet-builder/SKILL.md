@@ -62,6 +62,8 @@ Version `v1` for the first snapshot, snapshot date = today. Never edit an import
 - **Management** rows: company guidance (midpoint; put the range in Notes).
 - **Thesis** rows: our own base case from the thesis work, anchored as in Step 3.
 - Include the **last reported period** with the pre-report consensus where you can find it, so the dashboard has colours before the next print.
+- **No hindsight:** a base row for a period already reported may use only what was known before the result: the pre-report consensus, the company's prior guidance, or a rule fixed in advance (e.g. "at least the prior quarter", "prior quarter scaled by guided revenue growth", "8-quarter average"). Never set it from the result. Write the rule in the row's Notes (NVDA, 2026-11-09).
+- **Guidance in another currency or basis** (e.g. TSMC guides in US$, reports monthly in NT$): convert with the company's own stated assumption and say so in Notes.
 - Period labels: company fiscal labels (`Q3 FY27`) for company metrics, calendar labels (`Q3 CY26`) for cross-company metrics, and `Oct 2026` for monthly ones. Exactly the same label in Base case and Scoring log.
 
 ### 5. Event ladder (Event ladder tab)
