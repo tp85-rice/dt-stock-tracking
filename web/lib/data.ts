@@ -8,9 +8,23 @@ export { usingFixtures };
 
 const FIXTURES = join(process.cwd(), "fixtures");
 
+/** Codes like D2, S9, S10 in number order (the database sorts them as text, so S10 came before S9). */
+export function byCode(a: string, b: string): number {
+  return a.localeCompare(b, "en", { numeric: true });
+}
+
+function inOrder(page: TickerPage): TickerPage {
+  return {
+    ...page,
+    drivers: [...page.drivers].sort((a, b) => byCode(a.code, b.code)),
+    signals: [...page.signals].sort((a, b) => byCode(a.signal_code, b.signal_code)),
+    events: [...page.events].sort((a, b) => byCode(a.signal_code, b.signal_code) || a.step_no - b.step_no),
+  };
+}
+
 function fixture(symbol: string): TickerPage | null {
   try {
-    return JSON.parse(readFileSync(join(FIXTURES, `${symbol}.json`), "utf8")) as TickerPage;
+    return inOrder(JSON.parse(readFileSync(join(FIXTURES, `${symbol}.json`), "utf8")) as TickerPage);
   } catch {
     return null;
   }
@@ -84,7 +98,7 @@ export async function getTickerPage(symbol: string): Promise<TickerPage | null> 
   for (const r of [drivers, signals, history, events, sources, baseCase, financials]) {
     if (r.error) throw new Error(`Could not load ${symbol}: ${r.error.message}`);
   }
-  return {
+  return inOrder({
     ticker,
     baseCase: baseCase.data?.[0] ?? null,
     drivers: drivers.data ?? [],
@@ -93,7 +107,7 @@ export async function getTickerPage(symbol: string): Promise<TickerPage | null> 
     events: events.data ?? [],
     sources: sources.data ?? [],
     financials: financials.data ?? [],
-  };
+  });
 }
 
 // ---------------------------------------------------------------- review queue (M3)

@@ -36,6 +36,23 @@ export function EventChip({ colour, status }: { colour: Colour; status: string |
   );
 }
 
+/** Summary of an event-ladder signal's milestones, for its row in the driver card. */
+export function LadderChip({ steps }: { steps: { colour: Colour; status: string | null; kind: string | null }[] }) {
+  if (steps.length === 0) return <StatusChip colour="GREY" detail="No data" />;
+  const red = steps.find((s) => s.colour === "RED");
+  const [colour, label]: [Colour, string] =
+    red ? ["RED", red.kind === "Thesis breaker" ? "Breached" : (red.status ?? "Missed")] :
+    steps.some((s) => s.colour === "YELLOW") ? ["YELLOW", "Overdue"] :
+    steps.every((s) => s.colour === "GREEN") ? ["GREEN", "All done"] :
+    ["PENDING", "Pending"];
+  return (
+    <span className="chip" title="Summary of this signal's milestones (listed under Milestones and checks)">
+      <span className={`dot ${colour}`} aria-hidden="true" />
+      {label}
+    </span>
+  );
+}
+
 const ARROW: Record<string, string> = { Accelerating: "↗", Flat: "→", Decelerating: "↘" };
 
 export function Arrow({ value }: { value: string | null }) {

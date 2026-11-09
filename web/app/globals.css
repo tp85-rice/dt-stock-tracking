@@ -127,7 +127,8 @@ main.shell { padding-top: 28px; padding-bottom: 96px; }
 .driver-head h2 { font-size: 18px; }
 .driver-thesis { color: var(--text-secondary); margin: 6px 0 12px; font-size: 14px; }
 .signals { width: 100%; border-collapse: collapse; font-size: 14px; table-layout: fixed; }
-.signals col.c-status { width: 150px; } .signals col.c-latest { width: 96px; } .signals col.c-var { width: 72px; }
+.signals col.c-status { width: 150px; } .signals col.c-latest { width: 96px; } .signals col.c-var { width: 88px; }
+.signals td.num .small { white-space: normal; } /* "vs our estimate" wraps under the variance instead of overlapping Momentum */
 .signals col.c-arrow { width: 120px; } .signals col.c-hist { width: 136px; } .signals col.c-age { width: 72px; }
 .signals th {
   text-align: left; font-weight: 600; color: var(--text-muted); font-size: 12px;
@@ -136,6 +137,7 @@ main.shell { padding-top: 28px; padding-bottom: 96px; }
 .signals td { border-bottom: 1px solid var(--hairline); padding: 8px 8px 8px 0; vertical-align: middle; }
 .signals tr:last-child td { border-bottom: 0; }
 .num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.signals td.num[data-label="Latest"] { white-space: normal; } /* long units wrap instead of spilling into the next column */
 .sig-name { overflow-wrap: anywhere; }
 .star { color: var(--text-primary); font-weight: 700; margin-right: 4px; }
 
