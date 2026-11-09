@@ -1,0 +1,385 @@
+<title>dt-dashboard Terminal Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column with a sticky contents rail on wide screens; commands sit in "terminal slips" with a copy button. */
+:root {
+  --bg: #f3f5f7;
+  --surface: #ffffff;
+  --ink: #17202a;
+  --muted: #5a6673;
+  --rule: #d9dfe5;
+  --accent: #0b6e8a;
+  --accent-soft: #e2f1f5;
+  --slip: #1d2630;
+  --slip-ink: #e6edf3;
+  --slip-prompt: #7fc8dc;
+  --slip-comment: #8b98a5;
+  --ok: #1e7a46;
+  --ok-soft: #e3f3e9;
+  --warn: #8a5a00;
+  --warn-soft: #fbf0d9;
+  --stop: #a3302a;
+  --stop-soft: #f8e3e1;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --body: "Public Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11161b; --surface: #182029; --ink: #e4e9ee; --muted: #9aa7b3; --rule: #2a3540;
+    --accent: #5cc1db; --accent-soft: #15313b; --slip: #0b1015; --slip-ink: #e6edf3; --slip-prompt: #7fc8dc;
+    --slip-comment: #7d8a96; --ok: #5ccb8b; --ok-soft: #14301f; --warn: #e8b553; --warn-soft: #33270f;
+    --stop: #ef8a82; --stop-soft: #3a1b19; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11161b; --surface: #182029; --ink: #e4e9ee; --muted: #9aa7b3; --rule: #2a3540;
+  --accent: #5cc1db; --accent-soft: #15313b; --slip: #0b1015; --slip-ink: #e6edf3; --slip-prompt: #7fc8dc;
+  --slip-comment: #7d8a96; --ok: #5ccb8b; --ok-soft: #14301f; --warn: #e8b553; --warn-soft: #33270f;
+  --stop: #ef8a82; --stop-soft: #3a1b19; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font: 16px/1.6 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+}
+.wrap { max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px; }
+@media (max-width: 860px) { .wrap { grid-template-columns: minmax(0, 1fr); gap: 0; } nav.toc { display: none; } }
+header.top { max-width: 1120px; margin: 0 auto; padding-block: 40px 28px; border-bottom: 1px solid var(--rule); margin-bottom: 32px; }
+.eyebrow { font: 600 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.15; }
+h1 { font-size: clamp(30px, 5vw, 44px); margin: 10px 0 12px; }
+.lede { font-size: 18px; color: var(--muted); max-width: 64ch; margin: 0; }
+h2 { font-size: 26px; margin: 56px 0 8px; padding-top: 8px; scroll-margin-top: 16px; }
+h3 { font-size: 19px; margin: 32px 0 6px; scroll-margin-top: 16px; }
+p, li { max-width: 68ch; }
+a { color: var(--accent); }
+code { font: 0.9em var(--mono); background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; }
+main { min-width: 0; }
+nav.toc { position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; padding-top: 8px; font-size: 14px; max-height: 100vh; overflow-y: auto; }
+nav.toc p { font: 600 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+nav.toc a { display: block; padding: 4px 8px; border-radius: 6px; text-decoration: none; color: var(--ink); }
+nav.toc a:hover, nav.toc a:focus-visible { background: var(--accent-soft); outline: none; }
+nav.toc .sub a { padding-left: 20px; color: var(--muted); font-size: 13px; }
+
+/* Terminal slip */
+.slip { background: var(--slip); color: var(--slip-ink); border-radius: 8px; margin: 10px 0 14px; position: relative; overflow: hidden; }
+.slip pre { margin: 0; padding: 14px 16px; padding-right: 84px; overflow-x: auto; font: 14px/1.55 var(--mono); }
+.slip pre::before { content: "% "; color: var(--slip-prompt); }
+.slip.out pre::before { content: none; }
+.slip.out { background: var(--surface); color: var(--ink); border: 1px dashed var(--rule); }
+.slip .label { position: absolute; top: 0; left: 0; font: 600 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 4px 8px; }
+.slip.out pre { padding-top: 22px; color: var(--muted); }
+button.copy {
+  position: absolute; top: 8px; right: 8px; font: 600 12px var(--mono); color: var(--slip-ink);
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); border-radius: 6px; padding: 4px 10px; cursor: pointer;
+}
+button.copy:hover { background: rgba(255,255,255,.16); }
+button.copy:focus-visible { outline: 2px solid var(--slip-prompt); outline-offset: 2px; }
+
+/* Callouts */
+.note { border-radius: 8px; padding: 12px 16px; margin: 14px 0; max-width: 72ch; }
+.note strong:first-child { display: block; font-family: var(--display); font-size: 15px; margin-bottom: 2px; }
+.note.ok { background: var(--ok-soft); } .note.ok strong:first-child { color: var(--ok); }
+.note.warn { background: var(--warn-soft); } .note.warn strong:first-child { color: var(--warn); }
+.note.stop { background: var(--stop-soft); } .note.stop strong:first-child { color: var(--stop); }
+
+/* Tables */
+.table { overflow-x: auto; margin: 12px 0 18px; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--rule); }
+th { font: 600 12px var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td code { white-space: nowrap; }
+
+/* Scenario cards */
+.where { display: inline-block; font: 600 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; margin-left: 8px; vertical-align: middle; }
+.where.term { background: var(--slip); color: var(--slip-ink); }
+.where.gh { background: var(--accent-soft); color: var(--accent); }
+.where.web { background: var(--ok-soft); color: var(--ok); }
+.where.claude { background: var(--warn-soft); color: var(--warn); }
+ol.steps { padding-left: 22px; } ol.steps > li { margin: 6px 0; }
+.why { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+.why div { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 16px; }
+.why h3 { margin: 0 0 4px; font-size: 16px; }
+.why p { margin: 0; font-size: 14.5px; color: var(--muted); }
+kbd { font: 600 12px var(--mono); border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; background: var(--surface); }
+footer { max-width: 1120px; margin: 56px auto 0; border-top: 1px solid var(--rule); padding-top: 16px; color: var(--muted); font-size: 13px; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<header class="top">
+  <div class="eyebrow">dt-dashboard · owners' handbook</div>
+  <h1>Working in the Terminal</h1>
+  <p class="lede">Why a few jobs happen in the Terminal on your Mac, how to set it up once, and the exact commands for every job, now and later. Copy each grey box into Terminal and press <kbd>Return</kbd>.</p>
+</header>
+
+<div class="wrap">
+<nav class="toc" aria-label="Contents">
+  <p>Contents</p>
+  <ol>
+    <li><a href="#why">Why the Terminal</a></li>
+    <li><a href="#where">Which jobs go where</a></li>
+    <li><a href="#basics">Terminal in five minutes</a></li>
+    <li><a href="#setup">A. One-time setup</a></li>
+    <li><a href="#start">B. Start of every session</a></li>
+    <li><a href="#now">C. Jobs today</a></li>
+    <li class="sub"><a href="#import">C1 Import a sheet</a></li>
+    <li class="sub"><a href="#reimport">C2 Re-import an update</a></li>
+    <li class="sub"><a href="#testimport">C3 Trial as a test ticker</a></li>
+    <li class="sub"><a href="#look">C4 Look at a sheet</a></li>
+    <li class="sub"><a href="#feeds">C5 Feeds and charts</a></li>
+    <li><a href="#later">D. Jobs later</a></li>
+    <li class="sub"><a href="#newticker">D1 A new ticker</a></li>
+    <li class="sub"><a href="#basev2">D2 Base case after earnings</a></li>
+    <li class="sub"><a href="#agents">D3 AI agents (M5)</a></li>
+    <li class="sub"><a href="#password">D4 Password changed</a></li>
+    <li class="sub"><a href="#newmac">D5 New Mac or Duong</a></li>
+    <li class="sub"><a href="#preview">D6 Preview the site</a></li>
+    <li><a href="#trouble">E. When something goes wrong</a></li>
+    <li><a href="#safety">F. Safety rules</a></li>
+    <li><a href="#cheat">G. Cheat sheet</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<h2 id="why">Why some jobs need the Terminal</h2>
+<p>The project has three places where things happen. Only one of them is allowed to hold the database password and run the project's scripts on request, and that is a computer you control.</p>
+<div class="why">
+  <div><h3>The website</h3><p>Reads the data and lets you approve readings on /review. It never holds the database password, so it cannot load a whole spreadsheet. That is on purpose: a website that could rewrite the database would be the easiest thing to attack.</p></div>
+  <div><h3>GitHub Actions</h3><p>Runs the scheduled jobs (daily feeds, chart data, database updates, backups) with the password stored as a GitHub secret. Good for jobs that run on a timer or with a button.</p></div>
+  <div><h3>Your Mac (Terminal)</h3><p>Runs the jobs you start by hand with a file on your computer, like importing a driver sheet. The password lives in a file called <code>.env</code> that never leaves your Mac.</p></div>
+</div>
+<p><strong>Why Claude does not run these for you:</strong> Claude works in a cloud copy of the code that does not have the database password, also on purpose. Claude prepares the files and the exact commands; you run the ones that write to the real database. This keeps a person in charge of every change to live data.</p>
+
+<h2 id="where">Which jobs go where</h2>
+<div class="table"><table>
+  <thead><tr><th>Job</th><th>Where</th><th>Section</th></tr></thead>
+  <tbody>
+    <tr><td>Import or re-import a driver sheet (NVDA, GRAB, new tickers)</td><td><span class="where term">Terminal</span></td><td><a href="#import">C1</a>, <a href="#reimport">C2</a></td></tr>
+    <tr><td>Try a sheet without showing it to anyone</td><td><span class="where term">Terminal</span></td><td><a href="#testimport">C3</a></td></tr>
+    <tr><td>Approve or reject new readings</td><td><span class="where web">Website</span> /review</td><td>–</td></tr>
+    <tr><td>Daily feeds and chart data (runs itself at 22:23 UTC)</td><td><span class="where gh">GitHub Actions</span></td><td><a href="#feeds">C5</a></td></tr>
+    <tr><td>Database structure changes (migrations)</td><td><span class="where gh">GitHub Actions</span>, automatic after a merge</td><td>Never by hand</td></tr>
+    <tr><td>Weekly backup, or one before a risky change</td><td><span class="where gh">GitHub Actions</span> button</td><td><a href="#feeds">C5</a></td></tr>
+    <tr><td>Build or refresh a sheet, change rules, write code</td><td><span class="where claude">Claude</span></td><td>Ask in chat</td></tr>
+    <tr><td>Score the AI agents, send their answers to review (M5)</td><td><span class="where term">Terminal</span></td><td><a href="#agents">D3</a></td></tr>
+  </tbody>
+</table></div>
+
+<h2 id="basics">The Terminal in five minutes</h2>
+<p>The Terminal is a window where you type a command and press <kbd>Return</kbd>. It answers in text. Your Mac shows a prompt ending in <code>%</code>, like <code>thaophan818@Thaos-MacBook-Pro dt-stock-tracking %</code>. The word before <code>%</code> is the folder you are in.</p>
+<div class="table"><table>
+  <thead><tr><th>You see or type</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><code>%</code></td><td>Ready for your command. In this guide the grey boxes start with <code>%</code>; do not type it, the Copy button leaves it out.</td></tr>
+    <tr><td><code>(.venv)</code> at the start</td><td>The project's own Python is switched on. You need it for every project command.</td></tr>
+    <tr><td><code>(base)</code> at the start</td><td>Anaconda's Python is also around. Harmless; ignore it.</td></tr>
+    <tr><td><code>cd ~/dt-stock-tracking</code></td><td>Go to the project folder (<code>~</code> is your home folder).</td></tr>
+    <tr><td><code>ls</code> / <code>pwd</code></td><td>List the files here / show which folder you are in.</td></tr>
+    <tr><td><code>open inputs</code></td><td>Open a folder in Finder (or a file in its app).</td></tr>
+    <tr><td><kbd>↑</kbd></td><td>Bring back the previous command.</td></tr>
+    <tr><td><kbd>Tab</kbd></td><td>Finish a file name for you.</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>C</kbd></td><td>Stop whatever is running. Always safe; an import stopped half-way writes nothing.</td></tr>
+    <tr><td><code>clear</code></td><td>Clean the screen.</td></tr>
+  </tbody>
+</table></div>
+<div class="note ok"><strong>One box at a time</strong>Paste one grey box, press Return, wait for the <code>%</code> to come back, read the last lines, then do the next box. If anything looks unexpected, copy the output into the chat with Claude.</div>
+
+<h2 id="setup">A. One-time setup on your Mac</h2>
+<p>You did most of this on Nov 5. Repeat it only on a new Mac, for Duong, or if the project folder was deleted.</p>
+<ol class="steps">
+  <li>Open Terminal: <kbd>⌘</kbd>+<kbd>Space</kbd>, type <em>Terminal</em>, press <kbd>Return</kbd>.</li>
+  <li>Check Python is 3.12 or newer:
+    <div class="slip"><pre>python3 --version</pre></div>
+    If it says "command not found" or an older version, install Python from python.org (the macOS installer), then open a new Terminal window.</li>
+  <li>Get the code (skip if <code>~/dt-stock-tracking</code> already exists). The repo is private, so GitHub asks you to sign in:
+    <div class="slip"><pre>git clone https://github.com/tp85-rice/dt-stock-tracking.git ~/dt-stock-tracking</pre></div></li>
+  <li>Go into the folder:
+    <div class="slip"><pre>cd ~/dt-stock-tracking</pre></div></li>
+  <li>Create the project's own Python (once per folder):
+    <div class="slip"><pre>python3 -m venv .venv</pre></div></li>
+  <li>Switch it on:
+    <div class="slip"><pre>source .venv/bin/activate</pre></div>
+    The prompt now starts with <code>(.venv)</code>.</li>
+  <li>Install the packages the scripts need:
+    <div class="slip"><pre>pip install -r worker/requirements-dev.txt</pre></div></li>
+  <li>Create your private settings file and open it:
+    <div class="slip"><pre>cp .env.example .env</pre></div>
+    <div class="slip"><pre>open -e .env</pre></div>
+    On the <code>DATABASE_URL=</code> line, paste the Supabase connection string: Supabase › your project › <strong>Connect</strong> › <strong>Session pooler</strong>, with your database password in place of <code>[YOUR-PASSWORD]</code>. Save and close TextEdit.</li>
+  <li>Check the connection:
+    <div class="slip"><pre>python -c "from worker.db import connect; connect().close(); print('connected')"</pre></div>
+    <div class="slip out"><span class="label">Expected</span><pre>connected</pre></div></li>
+</ol>
+<div class="note stop"><strong>The .env file is a password</strong>Never paste its contents into the chat, an email, GitHub or a screenshot. Git ignores it, so it is never uploaded.</div>
+
+<h2 id="start">B. Start of every session</h2>
+<p>Do these four boxes every time you open a new Terminal window for the project. They put you in the folder, switch on the project's Python, and fetch Claude's latest files.</p>
+<div class="slip"><pre>cd ~/dt-stock-tracking</pre></div>
+<div class="slip"><pre>source .venv/bin/activate</pre></div>
+<div class="slip"><pre>git checkout main</pre></div>
+<div class="slip"><pre>git pull</pre></div>
+<div class="slip out"><span class="label">Expected (last line)</span><pre>Already up to date.      (or a list of changed files)</pre></div>
+<p>If the list of changed files includes <code>worker/requirements.txt</code>, also run:</p>
+<div class="slip"><pre>pip install -r worker/requirements-dev.txt</pre></div>
+
+<h2 id="now">C. Jobs today</h2>
+
+<h3 id="import">C1. Import a driver sheet <span class="where term">Terminal</span></h3>
+<p>Use this when Claude says a sheet is ready, for example GRAB now. Do <a href="#start">B</a> first. Replace <code>GRAB</code> with the ticker.</p>
+<ol class="steps">
+  <li>Check the sheet without touching the database:
+    <div class="slip"><pre>python -m worker.import_xlsx inputs/GRAB_driver_sheet.xlsx --dry-run</pre></div>
+    <div class="slip out"><span class="label">Expected (last lines)</span><pre>GRAB: 6 drivers, 26 signals, 29 base case rows, 19 event steps, 14 sources, 74 observations
+
+Dry run: the sheet is valid. Nothing was written.</pre></div>
+    Lines starting <code>[WARNING]</code> are information (for GRAB: older history rows with no base case, a few sources with no link, and D1 with six signals; all expected). Lines starting <code>[ERROR]</code> mean stop and send the output to Claude.</li>
+  <li>Import it for real:
+    <div class="slip"><pre>python -m worker.import_xlsx inputs/GRAB_driver_sheet.xlsx</pre></div>
+    <div class="slip out"><span class="label">Expected (last line)</span><pre>Imported GRAB.</pre></div></li>
+  <li>Open the website, sign in, and check the ticker appears with its drivers and colours.</li>
+</ol>
+<div class="note ok"><strong>All or nothing</strong>An import either finishes completely or writes nothing. If it stops with "Import stopped, nothing was written", the live site is unchanged.</div>
+
+<h3 id="reimport">C2. Re-import after Claude updates a sheet <span class="where term">Terminal</span></h3>
+<p>Use this after Claude refreshes a sheet (NVDA after the Nov 17 results, a GRAB threshold Duong changes). It is the same as C1, after <code>git pull</code> fetched the new file.</p>
+<ul>
+  <li>Readings that came from the sheet are replaced by the sheet's. Readings you approved on /review are never touched.</li>
+  <li>Drivers, signals, sources and milestones are updated. Rows removed from the sheet are listed, not deleted.</li>
+  <li>Base case rows can never change. If a value changed, the import stops with "Base cases can't be changed: add it as a new version". Nothing is written; ask Claude for a new version (v2).</li>
+</ul>
+
+<h3 id="testimport">C3. Try a sheet as a hidden test ticker <span class="where term">Terminal</span></h3>
+<p>Use this when you want to see a sheet in the database without anyone else seeing it.</p>
+<div class="slip"><pre>python -m worker.import_xlsx inputs/GRAB_driver_sheet.xlsx --ticker TEST --test</pre></div>
+<p>Look at it in Supabase › <strong>SQL Editor</strong> with <code>select * from v_scores where ticker = 'TEST';</code>. Remove it afterwards in the same editor with <code>select app.delete_test_ticker('TEST');</code>.</p>
+
+<h3 id="look">C4. Look at a sheet <span class="where term">Terminal</span></h3>
+<div class="slip"><pre>open inputs/GRAB_driver_sheet.xlsx</pre></div>
+<p>Excel opens it and the formula columns (colour, variance) calculate. <strong>Close it without saving.</strong> The sheets are written from <code>research/&lt;TICKER&gt;/driver_spec.json</code>, so hand edits would be lost and would block the next <code>git pull</code>. To change something, tell Claude.</p>
+
+<h3 id="feeds">C5. Feeds, chart data and backups <span class="where gh">GitHub Actions</span></h3>
+<p>These run on GitHub, not in the Terminal. To run one now: GitHub › <strong>tp85-rice/dt-stock-tracking</strong> › <strong>Actions</strong> › pick the job › <strong>Run workflow</strong>.</p>
+<div class="table"><table>
+  <thead><tr><th>Job (Actions name)</th><th>When it runs</th><th>Run it by hand when</th></tr></thead>
+  <tbody>
+    <tr><td>daily feeds</td><td>Every day 22:23 UTC</td><td>A filing just came out and you don't want to wait. Tick "dry run" to only see what it would find.</td></tr>
+    <tr><td>weekly database backup</td><td>Mondays</td><td>Before any big change. The backup file is under the run › Artifacts.</td></tr>
+    <tr><td>migrate database</td><td>After every merge that changes the database</td><td>Only if Claude asks.</td></tr>
+  </tbody>
+</table></div>
+<p>The Terminal can run the same jobs if GitHub is down, as a dry run that writes nothing:</p>
+<div class="slip"><pre>python -m worker.run_feeds --dry-run</pre></div>
+<div class="slip"><pre>python -m worker.financials --dry-run</pre></div>
+
+<h2 id="later">D. Jobs later</h2>
+
+<h3 id="newticker">D1. A new ticker <span class="where claude">Claude</span> then <span class="where term">Terminal</span></h3>
+<ol class="steps">
+  <li>Ask Claude to build the sheet (from research, or from your own base case file, as for GRAB).</li>
+  <li>Claude opens a pull request, merges it, and lists decisions for you in <code>research/OPEN_DECISIONS.md</code>.</li>
+  <li>Answer the decisions in chat. Claude updates the sheet.</li>
+  <li>Do <a href="#start">B</a>, then <a href="#import">C1</a> with the new ticker's file name.</li>
+</ol>
+
+<h3 id="basev2">D2. Base case after earnings <span class="where claude">Claude</span> then <span class="where term">Terminal</span></h3>
+<p>After a results call, ask Claude to refresh the sheet ("Refresh NVDA driver sheet"). Claude adds a new base case version (v2) with the consensus quoted in news coverage. Then do <a href="#start">B</a> and <a href="#import">C1</a>. New readings from the 10-Q also arrive on /review through the daily feeds; approve them there.</p>
+
+<h3 id="agents">D3. AI agents (M5) <span class="where term">Terminal</span></h3>
+<p>Once Duong's gold set is in the scorecard and an agent produces an answers file (Claude will say where), add your Anthropic key and daily spending cap to <code>.env</code> (<code>open -e .env</code>): <code>ANTHROPIC_API_KEY=...</code> and <code>AGENT_DAILY_USD_CAP=1.00</code>.</p>
+<p>Score the agent against the gold set (writes a scored copy; the scorecard itself is not changed):</p>
+<div class="slip"><pre>python -m worker.agents.evaluate templates/llm_eval_scorecard.xlsx answers.jsonl --version junior-v0.1 --out scored.xlsx</pre></div>
+<div class="slip out"><span class="label">Expected (last line)</span><pre>Result: PASS      (or FAIL, with the rates above it)</pre></div>
+<p>See what it would send to the review queue, then send it:</p>
+<div class="slip"><pre>python -m worker.agents.submit answers.jsonl --dry-run</pre></div>
+<div class="slip"><pre>python -m worker.agents.submit answers.jsonl</pre></div>
+<p>Answers that fail the quote check are held back, never shown as pending. Everything else waits for you on /review.</p>
+
+<h3 id="password">D4. The database password changed</h3>
+<ol class="steps">
+  <li>Copy the new Session pooler string from Supabase › <strong>Connect</strong>.</li>
+  <li>Update <code>.env</code> on your Mac (<code>open -e .env</code>, replace the <code>DATABASE_URL</code> line, save).</li>
+  <li>Update the GitHub secret: repo › Settings › Secrets and variables › Actions › <strong>SUPABASE_DB_URL</strong> › Update.</li>
+  <li>Check with the last box of <a href="#setup">A</a>.</li>
+</ol>
+
+<h3 id="newmac">D5. A new Mac, or setting up Duong</h3>
+<p>Follow <a href="#setup">A</a> from the start. Duong uses the same commands with his own folder; he needs collaborator access on GitHub and the connection string from an owner, shared in person or through a password manager, never by email or chat.</p>
+
+<h3 id="preview">D6. Preview the website on your Mac (optional)</h3>
+<p>Only for looking at a design change before it goes live. Needs Node.js (the LTS version from nodejs.org). Uses sample data, never the database.</p>
+<div class="slip"><pre>cd ~/dt-stock-tracking/web</pre></div>
+<div class="slip"><pre>npm install</pre></div>
+<div class="slip"><pre>npm run dev:fixtures</pre></div>
+<p>Open <code>http://localhost:3000/t/NVDA</code> in your browser. Stop it with <kbd>Ctrl</kbd>+<kbd>C</kbd>, then <code>cd ..</code> to go back.</p>
+
+<h2 id="trouble">E. When something goes wrong</h2>
+<p>Find the message you see, do the fix, and run your command again. If it is not here, copy the whole output into the chat.</p>
+<div class="table"><table>
+  <thead><tr><th>You see</th><th>Why</th><th>Fix</th></tr></thead>
+  <tbody>
+    <tr><td><code>zsh: command not found: python</code></td><td>The project's Python is off (no <code>(.venv)</code>).</td><td><code>source .venv/bin/activate</code></td></tr>
+    <tr><td><code>No module named 'worker'</code></td><td>You are not in the project folder.</td><td><code>cd ~/dt-stock-tracking</code></td></tr>
+    <tr><td><code>No module named 'openpyxl'</code> or <code>'psycopg'</code></td><td>Packages not installed in this Python.</td><td><code>pip install -r worker/requirements-dev.txt</code></td></tr>
+    <tr><td><code>error: externally-managed-environment</code></td><td>pip ran outside the project's Python.</td><td><code>source .venv/bin/activate</code>, then pip again</td></tr>
+    <tr><td><code>DATABASE_URL is not set</code></td><td><code>.env</code> is missing or the line is empty.</td><td>Step 8 of <a href="#setup">A</a></td></tr>
+    <tr><td><code>password authentication failed</code></td><td>The password in <code>.env</code> is wrong or was reset.</td><td><a href="#password">D4</a>. If the password has symbols like <code>@ # /</code>, reset it to letters and digits.</td></tr>
+    <tr><td><code>connection ... timeout</code> or <code>could not translate host name</code></td><td>Wi-Fi, VPN, or the direct connection string instead of the Session pooler.</td><td>Check the internet; use the Session pooler string.</td></tr>
+    <tr><td><code>No such file or directory: inputs/...</code></td><td>The file is not here yet, or a typo.</td><td><code>git pull</code>, then <code>ls inputs</code> to see the exact name.</td></tr>
+    <tr><td><code>Your local changes ... would be overwritten</code> (on git pull)</td><td>A tracked file was edited on your Mac, often a sheet saved in Excel.</td><td>To throw away your edit: <code>git restore inputs/GRAB_driver_sheet.xlsx</code> (use the file it names), then <code>git pull</code>. Unsure? Send the output to Claude.</td></tr>
+    <tr><td><code>[ERROR] ...</code> then <code>nothing was imported</code></td><td>The sheet has a problem.</td><td>Nothing changed. Send the output to Claude.</td></tr>
+    <tr><td><code>Base cases can't be changed</code></td><td>A base case value differs from what is stored.</td><td>Nothing changed. Ask Claude for a new version.</td></tr>
+    <tr><td>A <code>&gt;</code> or <code>quote&gt;</code> prompt</td><td>A quote mark was not closed.</td><td><kbd>Ctrl</kbd>+<kbd>C</kbd> and paste again.</td></tr>
+    <tr><td>Nothing happens for minutes</td><td>Waiting on the network.</td><td><kbd>Ctrl</kbd>+<kbd>C</kbd>, check the internet, try again.</td></tr>
+  </tbody>
+</table></div>
+
+<h2 id="safety">F. Safety rules</h2>
+<ul>
+  <li>Run <code>--dry-run</code> first whenever a command has one.</li>
+  <li>Never paste the contents of <code>.env</code>, a connection string or a password anywhere. Claude never needs them.</li>
+  <li>Don't run database changes (migrations) by hand; GitHub does it after review.</li>
+  <li>Don't edit files in the project folder by hand; ask Claude, so the change is reviewed and recorded.</li>
+  <li><kbd>Ctrl</kbd>+<kbd>C</kbd> is always safe.</li>
+</ul>
+
+<h2 id="cheat">G. Cheat sheet</h2>
+<div class="slip out"><span class="label">Start of session</span><pre>cd ~/dt-stock-tracking
+source .venv/bin/activate
+git checkout main
+git pull</pre></div>
+<div class="slip out"><span class="label">Import a sheet</span><pre>python -m worker.import_xlsx inputs/TICKER_driver_sheet.xlsx --dry-run
+python -m worker.import_xlsx inputs/TICKER_driver_sheet.xlsx</pre></div>
+<div class="slip out"><span class="label">Look at a sheet</span><pre>open inputs/TICKER_driver_sheet.xlsx</pre></div>
+<div class="slip out"><span class="label">Check the database connection</span><pre>python -c "from worker.db import connect; connect().close(); print('connected')"</pre></div>
+
+<footer>Source: <code>docs/TERMINAL_GUIDE.html</code> in the repo. Claude updates it whenever a command or a job changes. Last updated 2026-11-09.</footer>
+</main>
+</div>
+
+<script>
+document.querySelectorAll('.slip:not(.out)').forEach(function (slip) {
+  var pre = slip.querySelector('pre');
+  var b = document.createElement('button');
+  b.className = 'copy'; b.type = 'button'; b.textContent = 'Copy';
+  b.setAttribute('aria-label', 'Copy command');
+  b.addEventListener('click', function () {
+    var text = pre.textContent;
+    var done = function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy'; }, 1500); };
+    var fallback = function () {
+      var r = document.createRange(); r.selectNodeContents(pre);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      b.textContent = 'Press ⌘C';
+    };
+    try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
+  });
+  slip.appendChild(b);
+});
+</script>

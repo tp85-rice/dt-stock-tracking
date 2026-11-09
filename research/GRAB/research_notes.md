@@ -67,7 +67,7 @@ price stays blank until decision 5). They remain in the owners' file only.
 | Signal | Owners' file | App | Why |
 |---|---|---|---|
 | S1-S4, S6, S9-S12, S15-S23, S25 | as in the file | same | |
-| S5 mobility revenue growth | 🟡 | GREY | The file says "no base case"; the yellow comes from the slowdown. Add a Thesis row (e.g. 8% alert line) to score it |
+| S5 mobility revenue growth | 🟡 | GREEN (since 2026-11-08) | Scored against the 8% alert line (owners' decision); the file's yellow reflects the slowdown, shown by the Decelerating arrow |
 | S14 Indonesia fee cap | 🟡 | Event steps pending | The watch comes from the new delivery guidelines; no step has happened yet |
 | S24 USD/IDR | 🟡 | GREEN | 18,143 is inside the owners' base range (17,500-18,500); the yellow reflects the trend |
 | S26 flows | 🔴 | Thesis breaker step RED | Same meaning, shown on the milestones list |
@@ -78,7 +78,7 @@ price stays blank until decision 5). They remain in the owners' file only.
 - D1 keeps all six signals (S1-S6), one over the usual cap; the app's "over cap" tag on D1 is expected.
 - S3 GMV thesis-break line: 15% for now; Duong to confirm or change (12% would be tolerance 0.40).
 - Claude's proposed tolerances accepted: S1 5%, S2 3%, S4 5%, S6 35%, S9 red below -$20M, S11 10%.
-- Still open: a base case for S5 (decision 11).
+- S5 base case: the 8% alert line as a Thesis row (green at or above 8%, red below).
 
 ## 6. Gaps
 
