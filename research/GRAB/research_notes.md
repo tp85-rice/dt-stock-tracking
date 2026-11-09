@@ -73,7 +73,14 @@ price stays blank until decision 5). They remain in the owners' file only.
 | S26 flows | 🔴 | Thesis breaker step RED | Same meaning, shown on the milestones list |
 | S27 MSCI, S28 rating | 🟡 | Event steps pending | Nothing has happened yet; the dates are on the ladder |
 
-## 5. Gaps
+## 5. Owner decisions (2026-11-08)
+
+- D1 keeps all six signals (S1-S6), one over the usual cap; the app's "over cap" tag on D1 is expected.
+- S3 GMV thesis-break line: 15% for now; Duong to confirm or change (12% would be tolerance 0.40).
+- Claude's proposed tolerances accepted: S1 5%, S2 3%, S4 5%, S6 35%, S9 red below -$20M, S11 10%.
+- Still open: a base case for S5 (decision 11).
+
+## 6. Gaps
 
 - No URLs for R4-R8 (macro dashboard, Mordor, insider filings).
 - Q4 2025 buybacks not checked; S19 has no Q4 2025 row.
