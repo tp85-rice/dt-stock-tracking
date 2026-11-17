@@ -210,3 +210,18 @@ def test_restated_previous_quarter_comes_from_six_month_figure():
                                  {"h": {"concept": "us-gaap:Revenues", "dims": {"ProductOrServiceAxis": "HyperscaleMember"}}}, 1, 8)
     got = {r["fiscal_period"]: round(r["value"], 3) for r in rows}
     assert got == {"Q2 FY27": 48.71, "Q1 FY27": 43.051}
+
+
+def test_filing_list_uses_a_page_size_edgar_accepts(monkeypatch):
+    # EDGAR answers HTTP 400 to any count other than 10, 20, 40, 80 or 100 (seen 2026-11-17 with count=12).
+    assert [sec.page_size(n) for n in (1, 10, 12, 21, 80, 500)] == [10, 10, 20, 40, 80, 100]
+    urls = []
+
+    def fake_fetch(url, timeout=90):
+        urls.append(url)
+        entry = ("<entry><filing-type>6-K</filing-type><filing-date>2026-11-13</filing-date>"
+                 "<filing-href>https://www.sec.gov/Archives/edgar/data/1046179/1/x-index.htm</filing-href></entry>")
+        return entry * 15
+    monkeypatch.setattr(sec, "fetch", fake_fetch)
+    out = sec.list_filings(1046179, "6-K", 12)
+    assert "count=20&" in urls[0] and len(out) == 12

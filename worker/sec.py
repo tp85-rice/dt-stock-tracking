@@ -81,10 +81,19 @@ class Filing:
             self.folder = self.index_url.rsplit("/", 1)[0]
 
 
+# EDGAR's browse feed accepts only these page sizes; any other count gets HTTP 400 (since Nov 2026).
+PAGE_SIZES = (10, 20, 40, 80, 100)
+
+
+def page_size(count: int) -> int:
+    """Smallest page size EDGAR accepts that holds `count` filings (100 at most)."""
+    return next((s for s in PAGE_SIZES if s >= count), PAGE_SIZES[-1])
+
+
 def list_filings(cik: str | int, form: str, count: int = 10) -> list[Filing]:
     """Newest first. Uses EDGAR's company browse feed (Atom) on www.sec.gov."""
     url = (f"{SEC}/cgi-bin/browse-edgar?action=getcompany&CIK={int(cik):010d}&type={form}"
-           f"&dateb=&owner=include&count={max(count, 10)}&output=atom")
+           f"&dateb=&owner=include&count={page_size(count)}&output=atom")
     feed = fetch(url)
     out = []
     for entry in re.findall(r"<entry>.*?</entry>", feed, re.S):
